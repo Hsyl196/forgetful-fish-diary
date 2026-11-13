@@ -149,6 +149,74 @@
   .cal-legend .lg { display: inline-flex; align-items: center; gap: 4px; }
   .cal-legend .sq { width: 14px; height: 14px; border-radius: 7px; font-size: 8px; display: flex; align-items: center; justify-content: center; font-weight: 500; }
 
+  /* ---- 顶部标签页 ---- */
+  .tabs { display: flex; margin: 16px 16px 0; background: var(--card); border-radius: 14px; padding: 4px; gap: 4px; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+  .tab {
+    flex: 1; padding: 10px 0; border: none; background: transparent;
+    border-radius: 10px; font-size: 14px; color: var(--text-sub); cursor: pointer;
+    transition: all .15s;
+  }
+  .tab.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+
+  /* ---- 心情海洋 ---- */
+  .ocean {
+    position: relative; height: 380px; margin: 16px 16px 0;
+    border-radius: 18px; overflow: hidden; cursor: default;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(255,255,255,.35), transparent 35%),
+      linear-gradient(180deg, #b8ecf9 0%, #56b8d8 45%, #0e7a96 100%);
+    box-shadow: inset 0 -10px 24px rgba(0,60,90,.25), 0 4px 16px rgba(0,0,0,.08);
+  }
+  .ocean .fish-wrap { position: absolute; left: -110px; will-change: transform; animation: swim linear infinite; }
+  .ocean .bob { display: inline-block; animation: bob ease-in-out infinite; cursor: pointer; }
+  .ocean .fish-label {
+    position: absolute; bottom: 12px; left: 0; right: 0; text-align: center;
+    color: rgba(255,255,255,.9); font-size: 12px; text-shadow: 0 1px 4px rgba(0,60,90,.4);
+  }
+  .ocean .empty-ocean {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px;
+    color: rgba(255,255,255,.95); font-size: 14px; text-shadow: 0 1px 6px rgba(0,60,90,.4);
+  }
+  .ocean .empty-ocean .big { font-size: 40px; }
+  @keyframes swim { from { transform: translateX(0); } to { transform: translateX(640px); } }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+  .ocean-bubbles i {
+    position: absolute; border-radius: 50%;
+    background: rgba(255,255,255,.35); animation: rise linear infinite;
+  }
+  @keyframes rise { from { transform: translateY(0); opacity: .8; } to { transform: translateY(-380px); opacity: 0; } }
+
+  /* ---- 统计页 ---- */
+  .donut-box { position: relative; width: 220px; margin: 0 auto; }
+  .donut-center {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 2px;
+  }
+  .donut-center .num { font-size: 28px; font-weight: 700; color: var(--text); }
+  .donut-center .cap { font-size: 12px; color: var(--text-sub); }
+  .stat-chips { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+  .stat-chips .chip { background: #f0f2f8; border-radius: 10px; padding: 8px 14px; font-size: 12px; color: var(--text-sub); }
+  .stat-chips .chip b { color: var(--text); font-size: 15px; margin-right: 3px; }
+  .legend-list { margin-top: 16px; }
+  .legend-list .row {
+    display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+    border-radius: 12px; background: #fafbfd; margin-bottom: 6px; font-size: 13px;
+  }
+  .legend-list .row .nm { flex: 1; font-weight: 500; }
+  .legend-list .row .ct { color: var(--text-sub); }
+  .legend-list .bar { width: 90px; height: 8px; border-radius: 4px; background: #eceef5; overflow: hidden; }
+  .legend-list .bar i { display: block; height: 100%; border-radius: 4px; }
+
+  /* ---- 隐私按钮 ---- */
+  .privacy-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 7px 14px; border-radius: 10px; border: none;
+    background: #f0f2f8; cursor: pointer; font-size: 12.5px; color: var(--text);
+    margin-top: 10px;
+  }
+  .privacy-btn.public { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+
   .day-title { margin: 20px 16px 0; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; }
   .day-title .write-link { font-size: 13px; color: var(--primary); font-weight: 500; cursor: pointer; }
   .diary-item {
@@ -345,6 +413,13 @@
     </div>
   </div>
 
+  <div class="tabs">
+    <button class="tab active" data-tab="cal" onclick="switchTab('cal')">📅 日历</button>
+    <button class="tab" data-tab="ocean" onclick="switchTab('ocean')">🌊 心情海洋</button>
+    <button class="tab" data-tab="stats" onclick="switchTab('stats')">📊 统计</button>
+  </div>
+
+  <div id="calBody">
   <div class="cal-card">
     <div class="cal-head">
       <div class="month" id="calMonth">2026年11月</div>
@@ -368,6 +443,22 @@
     <span class="write-link" id="writeForDate">✏️ 补写 / 新写这天日记</span>
   </div>
   <div id="dayList"></div>
+  </div>
+
+  <!-- 心情海洋 -->
+  <div id="oceanBody" style="display:none">
+    <div class="ocean" id="oceanScene"></div>
+    <div class="day-title" style="margin-top:18px">
+      <span>🌐 公开日记管理</span>
+      <span style="font-size:12px;font-weight:400;color:var(--text-sub)">点击小鱼可查看日记</span>
+    </div>
+    <div id="oceanList"></div>
+  </div>
+
+  <!-- 统计 -->
+  <div id="statsBody" style="display:none">
+    <div class="card" id="statsCard"></div>
+  </div>
 </div>
 
 <!-- ============ 页面二：写日记 ============ -->
@@ -464,6 +555,7 @@
     <span class="close" onclick="closeModal()">✕</span>
     <h2 id="mTitle"></h2>
     <div class="m-line" id="mMeta"></div>
+    <button class="privacy-btn" id="mPrivacyBtn" onclick="togglePrivacy(currentModalId)"></button>
     <div class="content" id="mContent"></div>
     <div class="photos" id="mPhotos"></div>
     <audio id="mAudio" controls style="width:100%;margin-top:14px;display:none"></audio>
@@ -513,11 +605,24 @@ const MOODS = [
 ];
 
 /* 生成涂鸦脸 SVG */
+function faceInner(i) {
+  const m = MOODS[i] || MOODS[1];
+  return `<path d="${m.melt ? MELT_FACE : FACE}" fill="${m.fill}" stroke="${m.stroke}" stroke-width="2.5" stroke-linejoin="round"/>${m.f(m.stroke)}`;
+}
 function doodleSVG(i, size=48) {
   const m = MOODS[i] || MOODS[1];
-  return `<svg width="${size}" height="${size}" viewBox="0 0 50 52" xmlns="http://www.w3.org/2000/svg">
-    <path d="${m.melt ? MELT_FACE : FACE}" fill="${m.fill}" stroke="${m.stroke}" stroke-width="2.5" stroke-linejoin="round"/>
-    ${m.f(m.stroke)}
+  return `<svg width="${size}" height="${size}" viewBox="0 0 50 52" xmlns="http://www.w3.org/2000/svg">${faceInner(i)}</svg>`;
+}
+/* 涂鸦小鱼：心情脸 + 鱼身鱼尾 */
+function doodleFishSVG(i, w=84) {
+  const m = MOODS[i] || MOODS[1];
+  const h = Math.round(w * 56 / 90);
+  return `<svg width="${w}" height="${h}" viewBox="0 0 90 56" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6 28 L22 14 L22 42 Z" fill="${m.fill}" stroke="${m.stroke}" stroke-width="2.5" stroke-linejoin="round"/>
+    <ellipse cx="48" cy="28" rx="32" ry="21" fill="${m.fill}" stroke="${m.stroke}" stroke-width="2.5"/>
+    <g transform="translate(26,6) scale(0.44)">${faceInner(i)}</g>
+    <circle cx="13" cy="21" r="3.2" fill="#dff2fb" opacity=".75"/>
+    <circle cx="7" cy="15" r="2" fill="#dff2fb" opacity=".75"/>
   </svg>`;
 }
 
@@ -659,11 +764,20 @@ function relLabel(key) {
 }
 
 /* ================= 页面切换 ================= */
+function switchTab(tab) {
+  document.getElementById('calBody').style.display = tab === 'cal' ? 'block' : 'none';
+  document.getElementById('oceanBody').style.display = tab === 'ocean' ? 'block' : 'none';
+  document.getElementById('statsBody').style.display = tab === 'stats' ? 'block' : 'none';
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  if (tab === 'ocean') renderOcean();
+  if (tab === 'stats') renderStats();
+}
 function showCalendar() {
   document.getElementById('editorPage').classList.remove('show');
   document.getElementById('calendarPage').classList.add('show');
   document.getElementById('fabBtn').style.display = 'flex';
   resetEditor();
+  switchTab('cal');
   renderCalendar(); renderDayList();
 }
 function showEditor() {
@@ -736,6 +850,7 @@ function buildDiaryItem(item) {
       ${item.location ? `<span class="tag">📍 ${esc(item.location)}</span>` : ''}
       ${item.audio ? '<span class="tag">🎙️ 语音</span>' : ''}
       ${item.photos.length ? `<span class="tag">📷 ${item.photos.length}张</span>` : ''}
+      ${item.public ? '<span class="tag">🌐 公开</span>' : ''}
       <button class="del-btn">删除</button>
     </div>
     ${item.photos.length ? `<div class="thumbs">${item.photos.slice(0,3).map(p => `<img src="${p}">`).join('')}</div>` : ''}
@@ -751,7 +866,102 @@ function buildDiaryItem(item) {
   return d;
 }
 
-/* ================= 底部 ＋ 按钮 ================= */
+/* ================= 隐私：公开 / 私密 ================= */
+let currentModalId = null;
+function togglePrivacy(id) {
+  const it = store.find(x => x.id === id);
+  if (!it) return;
+  it.public = !it.public;
+  saveStore();
+  renderCalendar(); renderDayList();
+  if (document.getElementById('oceanBody').style.display !== 'none') renderOcean();
+  if (document.getElementById('statsBody').style.display !== 'none') renderStats();
+  if (document.getElementById('modalMask').classList.contains('show') && currentModalId === id) openModal(it);
+  toast(it.public ? '已设为公开，小鱼游进心情海洋啦 🌊' : '已设回私密 🔒');
+}
+
+/* ================= 心情海洋 ================= */
+function renderOcean() {
+  const scene = document.getElementById('oceanScene');
+  const pub = store.filter(x => x.public);
+  // 漂浮气泡装饰
+  let bubbles = '';
+  for (let i = 0; i < 10; i++) {
+    const s = 4 + Math.random() * 8;
+    bubbles += `<i style="left:${Math.random()*95}%; bottom:-12px; width:${s}px; height:${s}px; animation-duration:${6+Math.random()*8}s; animation-delay:-${Math.random()*10}s;"></i>`;
+  }
+  if (!pub.length) {
+    scene.innerHTML = `<div class="empty-ocean"><div class="big">🐟🫧</div><div>海里还没有小鱼</div><div style="font-size:12px;opacity:.8">在日记详情里点「设为公开」，它就会游到这里</div></div>${bubbles ? `<div class="ocean-bubbles">${bubbles}</div>` : ''}`;
+  } else {
+    const fishes = pub.map((item, i) => {
+      const top = 8 + (i * 37 + Math.random() * 15) % 72;
+      const dur = 16 + (i * 5) % 14;
+      const delay = -(i * 3.7);
+      const bobDur = 2.6 + (i % 3) * 0.7;
+      return `<div class="fish-wrap" style="top:${top}%; animation-duration:${dur}s; animation-delay:${delay}s;">
+        <span class="bob" style="animation-duration:${bobDur}s" title="${esc(item.title)}（点开查看）" onclick="openModalById(${item.id})">${doodleFishSVG(item.mi, 76 + (i % 3) * 14)}</span>
+      </div>`;
+    }).join('');
+    scene.innerHTML = fishes + `<div class="ocean-bubbles">${bubbles}</div><div class="fish-label">🌊 海里游着 ${pub.length} 条公开的小鱼 · 点击查看</div>`;
+  }
+  // 管理列表
+  const list = document.getElementById('oceanList');
+  if (!pub.length) { list.innerHTML = '<div class="empty">还没有公开的日记</div>'; return; }
+  list.innerHTML = '';
+  pub.forEach(item => list.appendChild(buildDiaryItem(item)));
+}
+function openModalById(id) {
+  const it = store.find(x => x.id === id);
+  if (it) openModal(it);
+}
+
+/* ================= 统计页 ================= */
+function renderStats() {
+  const card = document.getElementById('statsCard');
+  if (!store.length) {
+    card.innerHTML = '<div class="empty">还没有数据，先写几篇日记吧 🐟</div>';
+    return;
+  }
+  const total = store.length;
+  const days = new Set(store.map(x => x.dateKey)).size;
+  const pubCount = store.filter(x => x.public).length;
+  const counts = new Map();
+  store.forEach(x => counts.set(x.mi, (counts.get(x.mi) || 0) + 1));
+  const parts = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  // 环形饼图
+  const R = 70, C = 2 * Math.PI * R;
+  let acc = 0;
+  const slices = parts.map(([mi, cnt]) => {
+    const m = MOODS[mi] || MOODS[1];
+    const len = cnt / total * C;
+    const seg = `<circle cx="100" cy="100" r="${R}" fill="none" stroke="${m.stroke}" stroke-width="30"
+      stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-acc}"><title>${m.n} ${cnt} 篇</title></circle>`;
+    acc += len;
+    return seg;
+  }).join('');
+  // 图例（带比例条）
+  const legend = parts.map(([mi, cnt]) => {
+    const m = MOODS[mi] || MOODS[1];
+    const pct = Math.round(cnt / total * 100);
+    return `<div class="row">
+      ${doodleSVG(mi, 26)}<span class="nm">${m.n}</span>
+      <span class="bar"><i style="width:${pct}%; background:${m.fill}; border:1px solid ${m.stroke}"></i></span>
+      <span class="ct">${cnt} 篇 · ${pct}%</span>
+    </div>`;
+  }).join('');
+  card.innerHTML = `
+    <div class="section-title">📊 心情占比 <span class="hint">共 ${total} 篇日记</span></div>
+    <div class="donut-box">
+      <svg width="220" height="220" viewBox="0 0 200 200" style="transform:rotate(-90deg); display:block; margin:0 auto;">${slices}</svg>
+      <div class="donut-center"><div class="num">${total}</div><div class="cap">篇日记</div></div>
+    </div>
+    <div class="stat-chips">
+      <span class="chip"><b>${days}</b>个记录日</span>
+      <span class="chip"><b>${pubCount}</b>篇公开</span>
+      <span class="chip"><b>${total - pubCount}</b>篇私密</span>
+    </div>
+    <div class="legend-list">${legend}</div>`;
+}
 document.getElementById('fabBtn').onclick = () => {
   document.getElementById('pickDate').value = todayKey();
   document.getElementById('pickMask').classList.add('show');
@@ -1054,6 +1264,7 @@ document.getElementById('saveBtn').onclick = () => {
     content: document.getElementById('contentInput').value.trim(),
     mi: state.mi,
     photos: state.photos,
+    public: false,
     audio: null,
     location: state.locName,
     weather: state.dayWxCache ? state.dayWxCache.text : state.weatherText,
@@ -1078,12 +1289,16 @@ document.getElementById('saveBtn').onclick = () => {
 
 /* 详情弹窗 */
 function openModal(item) {
+  currentModalId = item.id;
   document.getElementById('mTitle').innerHTML = `${doodleSVG(item.mi, 24)}<span>${esc(item.title)}</span>`;
   const fest2 = getFestival(item.dateKey);
   const plan2 = getDayPlan(item.dateKey);
   let metaText = `${relLabel(item.dateKey)} ${item.time || ''} · ${item.weather || ''} ${item.location ? '· 📍' + item.location : ''}${fest2 ? ' · 🎉' + fest2.name : ''}`;
   if (plan2) metaText += plan2.type === 'rest' ? '（休）' : `（${plan2.name}）`;
   document.getElementById('mMeta').textContent = metaText;
+  const pb = document.getElementById('mPrivacyBtn');
+  pb.textContent = item.public ? '🌐 当前公开 · 点击设为私密' : '🔒 当前私密 · 点击设为公开';
+  pb.classList.toggle('public', !!item.public);
   document.getElementById('mContent').textContent = item.content;
   document.getElementById('mPhotos').innerHTML = item.photos.map(p => `<img src="${p}">`).join('');
   const a = document.getElementById('mAudio');
