@@ -77,24 +77,6 @@
   }
   .header h1 { font-size: 22px; font-weight: 600; letter-spacing: 1px; }
   .head-top { display: flex; align-items: center; justify-content: space-between; }
-  .theme-btn {
-    width: 38px; height: 38px; border-radius: 50%;
-    background: rgba(255,255,255,.25); border: 1px solid rgba(255,255,255,.35);
-    font-size: 17px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform .15s;
-  }
-  .theme-btn:active { transform: scale(.9); }
-
-  .theme-options { display: flex; flex-direction: column; gap: 10px; }
-  .theme-opt {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 14px; border-radius: 14px; cursor: pointer;
-    background: #f7f8fc; font-size: 14px; transition: all .15s;
-    border: 2px solid transparent;
-  }
-  .theme-opt.active { border-color: var(--primary); background: var(--primary-light); font-weight: 600; }
-  .theme-opt .sw { width: 26px; height: 26px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }
   .header .sub { font-size: 13px; opacity: .85; margin-top: 4px; }
   .weather-card {
     margin-top: 14px; background: rgba(255,255,255,.18);
@@ -448,7 +430,6 @@
   <div class="header">
     <div class="head-top">
       <h1>一条没有记性的鱼 🐟</h1>
-      <button class="theme-btn" id="themeBtn" title="换主题">🎨</button>
     </div>
     <div class="sub" id="todayText"></div>
     <div class="sub" style="margin-top:2px; font-size:11.5px; opacity:.75">鱼的记忆只有7秒，但日记替你记得 🫧</div>
@@ -608,19 +589,6 @@
   <button class="nav-item" data-tab="stats" onclick="switchTab('stats')"><span class="ni-ico">📊</span>统计</button>
   <button class="nav-item" data-tab="profile" onclick="switchTab('profile')"><span class="ni-ico">👤</span>我的</button>
 </nav>
-
-<!-- 主题选择弹窗 -->
-<div class="pick-mask" id="themeMask">
-  <div class="pick-box">
-    <h3>🎨 选择主题色</h3>
-    <div class="theme-options">
-      <div class="theme-opt" data-t="tiffany"><span class="sw" style="background:linear-gradient(135deg,#078e89,#56d8cd)"></span>蒂芙尼蓝 · 清新气质</div>
-      <div class="theme-opt" data-t="purple"><span class="sw" style="background:linear-gradient(135deg,#5866ea,#9b8cff)"></span>蓝紫极光 · 经典原版</div>
-      <div class="theme-opt" data-t="pink"><span class="sw" style="background:linear-gradient(135deg,#e8658f,#ffb0c6)"></span>樱花粉 · 甜美软萌</div>
-      <div class="theme-opt" data-t="blue"><span class="sw" style="background:linear-gradient(135deg,#3d8fd9,#a4d8fb)"></span>浅蓝海风 · 小鱼同款</div>
-    </div>
-  </div>
-</div>
 
 <!-- 选择日期弹窗 -->
 <div class="pick-mask" id="pickMask">
@@ -1452,20 +1420,12 @@ function closeModal() { document.getElementById('modalMask').classList.remove('s
 document.getElementById('modalMask').onclick = e => { if (e.target.id === 'modalMask') closeModal(); };
 
 /* ================= 主题切换 ================= */
-const themeMask = document.getElementById('themeMask');
 function applyTheme(t) {
   if (t === 'tiffany') document.body.removeAttribute('data-theme');
   else document.body.dataset.theme = t;
   localStorage.setItem('xinqing_theme', t);
-  document.querySelectorAll('.theme-opt').forEach(o => o.classList.toggle('active', o.dataset.t === t));
   document.querySelectorAll('.p-th').forEach(o => o.classList.toggle('active', o.dataset.t === t));
 }
-document.getElementById('themeBtn').onclick = () => themeMask.classList.add('show');
-themeMask.onclick = e => {
-  if (e.target.id === 'themeMask') themeMask.classList.remove('show');
-  const opt = e.target.closest('.theme-opt');
-  if (opt) { applyTheme(opt.dataset.t); themeMask.classList.remove('show'); }
-};
 document.getElementById('pThemes').onclick = e => {
   const th = e.target.closest('.p-th');
   if (th) { applyTheme(th.dataset.t); toast('主题已切换 ✨'); }
