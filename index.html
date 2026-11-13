@@ -26,7 +26,7 @@
     background: linear-gradient(180deg, var(--bg1) 0%, var(--bg) 45%, var(--bg3) 100%);
     color: var(--text);
     max-width: 480px; margin: 0 auto; min-height: 100vh;
-    padding-bottom: 100px;
+    padding-bottom: 96px;
   }
   /* ---- 主题包 ---- */
   body[data-theme="purple"] {
@@ -150,13 +150,63 @@
   .cal-legend .sq { width: 14px; height: 14px; border-radius: 7px; font-size: 8px; display: flex; align-items: center; justify-content: center; font-weight: 500; }
 
   /* ---- 顶部标签页 ---- */
-  .tabs { display: flex; margin: 16px 16px 0; background: var(--card); border-radius: 14px; padding: 4px; gap: 4px; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
-  .tab {
-    flex: 1; padding: 10px 0; border: none; background: transparent;
-    border-radius: 10px; font-size: 14px; color: var(--text-sub); cursor: pointer;
-    transition: all .15s;
+  /* ---- 底部导航栏 ---- */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px; z-index: 100;
+    display: flex; align-items: flex-end;
+    background: rgba(255,255,255,.92); backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(0,0,0,.05);
+    padding: 6px 4px calc(8px + env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 20px rgba(0,0,0,.06);
   }
-  .tab.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    background: none; border: none; cursor: pointer; padding: 4px 0;
+    font-size: 10.5px; color: var(--text-sub); transition: color .15s;
+  }
+  .nav-item .ni-ico { font-size: 20px; filter: grayscale(70%); opacity: .7; transition: all .18s; }
+  .nav-item.active { color: var(--primary); font-weight: 600; }
+  .nav-item.active .ni-ico { filter: none; opacity: 1; transform: translateY(-1px) scale(1.15); }
+  .nav-fab-slot { width: 66px; display: flex; justify-content: center; }
+
+  /* ---- 个人页 ---- */
+  .profile-hero { display: flex; flex-direction: column; align-items: center; padding: 28px 16px 22px; }
+  .p-avatar {
+    width: 86px; height: 86px; border-radius: 50%;
+    background: var(--primary-light); display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 0 0 2.5px var(--primary-soft), 0 4px 12px rgba(0,0,0,.06);
+  }
+  .p-name { font-size: 18px; font-weight: 700; margin-top: 12px; color: var(--text); }
+  .p-slogan { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
+  .p-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .p-stat { background: var(--bg); border-radius: 14px; padding: 12px 2px; text-align: center; }
+  .p-stat b { display: block; font-size: 20px; color: var(--primary); }
+  .p-stat span { font-size: 11px; color: var(--text-sub); }
+  .p-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 2px; font-size: 14px; }
+  .p-row + .p-row { border-top: 1px dashed rgba(0,0,0,.07); }
+  .p-row .p-act { font-size: 12.5px; color: var(--primary); cursor: pointer; }
+  .p-row.danger .p-act { color: var(--danger); }
+  .p-themes { display: flex; gap: 10px; }
+  .p-th {
+    flex: 1; border-radius: 14px; padding: 12px 4px; border: 2px solid transparent;
+    background: var(--bg); cursor: pointer; font-size: 11px; color: var(--text-sub);
+    display: flex; flex-direction: column; align-items: center; gap: 7px; transition: all .15s;
+  }
+  .p-th.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 600; }
+  .p-th .sw2 { width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+  .p-foot { text-align: center; font-size: 11px; color: var(--text-sub); margin: 18px 0 4px; }
+
+  .fab {
+    width: 58px; height: 58px; border-radius: 50%;
+    background: linear-gradient(140deg, var(--primary-deep), var(--primary) 55%, var(--primary-soft));
+    color: #fff; border: 3px solid rgba(255,255,255,.95); cursor: pointer;
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--primary) 45%, transparent);
+    display: flex; align-items: center; justify-content: center;
+    transform: translateY(-22px); transition: transform .15s;
+  }
+  .fab:active { transform: translateY(-22px) scale(.92); }
+  .fab .plus { font-size: 28px; }
 
   /* ---- 心情海洋 ---- */
   .ocean {
@@ -236,16 +286,6 @@
   .empty { text-align: center; color: var(--text-sub); font-size: 13px; padding: 30px 0; white-space: pre-line; }
 
   /* 底部悬浮 ＋ 按钮 */
-  .fab {
-    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
-    width: 62px; height: 62px; border-radius: 50%;
-    background: linear-gradient(140deg, var(--primary-deep), var(--primary) 55%, var(--primary-soft));
-    color: #fff; border: none; cursor: pointer; z-index: 50;
-    box-shadow: 0 6px 20px rgba(10,186,181,.42);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .fab:active { transform: translateX(-50%) scale(.92); }
-  .fab .plus { font-size: 30px; }
 
   /* 选择日期弹窗 */
   .pick-mask {
@@ -413,12 +453,6 @@
     </div>
   </div>
 
-  <div class="tabs">
-    <button class="tab active" data-tab="cal" onclick="switchTab('cal')">📅 日历</button>
-    <button class="tab" data-tab="ocean" onclick="switchTab('ocean')">🌊 心情海洋</button>
-    <button class="tab" data-tab="stats" onclick="switchTab('stats')">📊 统计</button>
-  </div>
-
   <div id="calBody">
   <div class="cal-card">
     <div class="cal-head">
@@ -458,6 +492,50 @@
   <!-- 统计 -->
   <div id="statsBody" style="display:none">
     <div class="card" id="statsCard"></div>
+  </div>
+
+  <!-- 个人页 -->
+  <div id="profileBody" style="display:none">
+    <div class="card profile-hero">
+      <div class="p-avatar">
+        <svg width="60" height="60" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 33 C 11 21, 28 15, 40 21 C 46 24, 50 28, 50 32 C 50 36, 46 40, 40 43 C 28 49, 11 45, 8 33 Z"
+                fill="#d9f6f4" stroke="#0a8f89" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M50 31 Q 57 25 61 20 Q 58 32 61 45 Q 56 39 50 34"
+                fill="#b5ecea" stroke="#0a8f89" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="20" cy="29" r="2.6" fill="#0a8f89"/>
+          <path d="M15 37 Q 20 40 26 37.5" fill="none" stroke="#0a8f89" stroke-width="2.2" stroke-linecap="round"/>
+          <circle cx="12" cy="31" r="3.2" fill="#fbc6d5" opacity=".8"/>
+          <circle cx="29" cy="31" r="3.2" fill="#fbc6d5" opacity=".8"/>
+          <circle cx="56" cy="12" r="2.4" fill="none" stroke="#7fd0e8" stroke-width="1.8"/>
+          <circle cx="49" cy="6" r="1.5" fill="none" stroke="#7fd0e8" stroke-width="1.6"/>
+        </svg>
+      </div>
+      <div class="p-name">一条没有记性的鱼 🐟</div>
+      <div class="p-slogan">鱼的记忆只有7秒，但日记替你记得 🫧</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">📈 我的数据</div>
+      <div class="p-stats" id="pStats"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">🎨 主题皮肤</div>
+      <div class="p-themes" id="pThemes">
+        <div class="p-th" data-t="tiffany"><span class="sw2" style="background:linear-gradient(135deg,#078e89,#56d8cd)"></span>蒂芙尼蓝</div>
+        <div class="p-th" data-t="purple"><span class="sw2" style="background:linear-gradient(135deg,#5866ea,#9b8cff)"></span>蓝紫极光</div>
+        <div class="p-th" data-t="pink"><span class="sw2" style="background:linear-gradient(135deg,#e8658f,#ffb0c6)"></span>樱花粉</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">🛠 通用</div>
+      <div class="p-row"><span>📤 备份日记数据</span><span class="p-act" onclick="exportData()">导出 JSON</span></div>
+      <div class="p-row"><span>🗺 定位城市</span><span class="p-act" id="pLocName" style="color:var(--text-sub)">未定位</span></div>
+      <div class="p-row danger"><span>🗑 清空所有日记</span><span class="p-act" onclick="clearAllData()">清空</span></div>
+    </div>
+    <div class="p-foot">心晴日记 · 数据保存在本设备浏览器中 🫧</div>
   </div>
 </div>
 
@@ -510,8 +588,14 @@
   <button class="save-btn" id="saveBtn">保存日记 ✨</button>
 </div>
 
-<!-- 底部 ＋ 按钮 -->
-<button class="fab" id="fabBtn"><span class="plus">＋</span></button>
+<!-- 底部导航栏 -->
+<nav class="bottom-nav" id="navBar">
+  <button class="nav-item active" data-tab="cal" onclick="switchTab('cal')"><span class="ni-ico">📅</span>日历</button>
+  <button class="nav-item" data-tab="ocean" onclick="switchTab('ocean')"><span class="ni-ico">🌊</span>海洋</button>
+  <div class="nav-fab-slot"><button class="fab" id="fabBtn"><span class="plus">＋</span></button></div>
+  <button class="nav-item" data-tab="stats" onclick="switchTab('stats')"><span class="ni-ico">📊</span>统计</button>
+  <button class="nav-item" data-tab="profile" onclick="switchTab('profile')"><span class="ni-ico">👤</span>我的</button>
+</nav>
 
 <!-- 主题选择弹窗 -->
 <div class="pick-mask" id="themeMask">
@@ -768,14 +852,17 @@ function switchTab(tab) {
   document.getElementById('calBody').style.display = tab === 'cal' ? 'block' : 'none';
   document.getElementById('oceanBody').style.display = tab === 'ocean' ? 'block' : 'none';
   document.getElementById('statsBody').style.display = tab === 'stats' ? 'block' : 'none';
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.getElementById('profileBody').style.display = tab === 'profile' ? 'block' : 'none';
+  document.querySelectorAll('.nav-item').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  window.scrollTo(0, 0);
   if (tab === 'ocean') renderOcean();
   if (tab === 'stats') renderStats();
+  if (tab === 'profile') renderProfile();
 }
 function showCalendar() {
   document.getElementById('editorPage').classList.remove('show');
   document.getElementById('calendarPage').classList.add('show');
-  document.getElementById('fabBtn').style.display = 'flex';
+  document.getElementById('navBar').style.display = 'flex';
   resetEditor();
   switchTab('cal');
   renderCalendar(); renderDayList();
@@ -783,7 +870,49 @@ function showCalendar() {
 function showEditor() {
   document.getElementById('calendarPage').classList.remove('show');
   document.getElementById('editorPage').classList.add('show');
-  document.getElementById('fabBtn').style.display = 'none';
+  document.getElementById('navBar').style.display = 'none';
+}
+
+/* ================= 个人页 ================= */
+function renderProfile() {
+  // 数据统计
+  const total = store.length;
+  const days = new Set(store.map(x => x.dateKey)).size;
+  const photos = store.reduce((s, x) => s + (x.photos ? x.photos.length : 0), 0);
+  // 连续记录天数：从今天（或昨天）往前数
+  const has = k => store.some(x => x.dateKey === k);
+  const cur = new Date();
+  if (!has(fmtKey(cur))) cur.setDate(cur.getDate() - 1);
+  let streak = 0;
+  while (has(fmtKey(cur))) { streak++; cur.setDate(cur.getDate() - 1); }
+  document.getElementById('pStats').innerHTML = `
+    <div class="p-stat"><b>${total}</b><span>日记篇数</span></div>
+    <div class="p-stat"><b>${days}</b><span>记录天数</span></div>
+    <div class="p-stat"><b>${streak}</b><span>连续记录</span></div>
+    <div class="p-stat"><b>${photos}</b><span>照片总数</span></div>`;
+  // 定位城市
+  document.getElementById('pLocName').textContent = state.locName || '未定位';
+}
+
+function exportData() {
+  if (!store.length) { toast('还没有日记可以备份哦'); return; }
+  const blob = new Blob([JSON.stringify(store, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'diary-backup-' + todayKey() + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('备份文件已导出 📤');
+}
+
+function clearAllData() {
+  if (!confirm('确定要清空所有日记吗？\n（包含照片和语音记录，此操作无法恢复，建议先导出备份）')) return;
+  localStorage.removeItem('xinqing_diary');
+  store = [];
+  saveStore();
+  toast('已清空，鱼的记忆重启了 🫧');
+  renderCalendar(); renderDayList();
+  renderProfile();
 }
 
 /* ================= 日历 ================= */
@@ -1316,12 +1445,17 @@ function applyTheme(t) {
   else document.body.dataset.theme = t;
   localStorage.setItem('xinqing_theme', t);
   document.querySelectorAll('.theme-opt').forEach(o => o.classList.toggle('active', o.dataset.t === t));
+  document.querySelectorAll('.p-th').forEach(o => o.classList.toggle('active', o.dataset.t === t));
 }
 document.getElementById('themeBtn').onclick = () => themeMask.classList.add('show');
 themeMask.onclick = e => {
   if (e.target.id === 'themeMask') themeMask.classList.remove('show');
   const opt = e.target.closest('.theme-opt');
   if (opt) { applyTheme(opt.dataset.t); themeMask.classList.remove('show'); }
+};
+document.getElementById('pThemes').onclick = e => {
+  const th = e.target.closest('.p-th');
+  if (th) { applyTheme(th.dataset.t); toast('主题已切换 ✨'); }
 };
 applyTheme(localStorage.getItem('xinqing_theme') || 'tiffany');
 
