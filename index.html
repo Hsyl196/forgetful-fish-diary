@@ -268,6 +268,41 @@ img { display: block; max-width: 100%; }
   margin-left: auto; padding: 4px 2px; border: none; background: none;
   color: var(--danger); font-size: 11.5px; cursor: pointer;
 }
+.edit-btn {
+  padding: 4px 2px; border: none; background: none;
+  color: var(--primary); font-size: 11.5px; cursor: pointer; margin-left: auto; margin-right: 10px;
+}
+/* ---- 搜索 / 筛选 ---- */
+.search-wrap { padding: 14px 16px 0; }
+.search-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--card); border-radius: 14px; padding: 10px 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+.search-bar .s-ico { font-size: 14px; opacity: .55; }
+.search-bar input {
+  flex: 1; border: none; outline: none; background: transparent;
+  font-size: 13.5px; font-family: inherit; color: var(--text);
+}
+.search-bar input::placeholder { color: var(--text-sub); opacity: .8; }
+.search-bar .s-clear { font-size: 13px; color: var(--text-sub); cursor: pointer; display: none; }
+.filter-row {
+  display: flex; gap: 8px; overflow-x: auto; padding: 12px 2px 4px;
+  scrollbar-width: none;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.f-chip {
+  display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
+  background: var(--card); border: 1.5px solid transparent; border-radius: 20px;
+  padding: 4px 10px 4px 6px; font-size: 12px; color: var(--text-sub); cursor: pointer;
+}
+.f-chip.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.search-hint { font-size: 12px; color: var(--text-sub); padding: 8px 2px 6px; }
+.result-date {
+  font-size: 11.5px; color: var(--text-sub); padding: 10px 2px 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.result-date::after { content: ''; flex: 1; height: 1px; background: rgba(0,0,0,.06); }
 .empty { padding: 28px 12px; text-align: center; font-size: 12.5px; line-height: 1.8; color: var(--text-sub); white-space: pre-line; }
 
 /* ---------- 7. 底部导航 ---------- */
@@ -639,6 +674,7 @@ audio { width: 100%; margin-top: 8px; height: 34px; }
   background: var(--surface-2); color: var(--text); font-size: 11.5px; cursor: pointer;
 }
 .privacy-btn.public { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.m-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
 .pick-mask {
   position: fixed; inset: 0; z-index: 120; display: none;
@@ -699,6 +735,13 @@ audio { width: 100%; margin-top: 8px; height: 34px; }
   </div>
 
   <div id="calBody">
+  <div class="search-wrap">
+    <div class="search-bar">
+      <span class="s-ico">🔍</span>
+      <input id="searchInput" placeholder="搜索日记的标题或内容…">
+      <span class="s-clear" id="searchClear">✕</span>
+    </div>
+  </div>
   <div class="cal-card">
     <div class="cal-head">
       <div class="month" id="calMonth">2026年11月</div>
@@ -722,6 +765,7 @@ audio { width: 100%; margin-top: 8px; height: 34px; }
     <span class="write-link" id="writeForDate">✏️ 补写 / 新写这天日记</span>
   </div>
   <div id="dayList"></div>
+  <div id="searchResults" style="display:none"></div>
   </div>
 
   <!-- 心情海洋 -->
@@ -779,6 +823,8 @@ audio { width: 100%; margin-top: 8px; height: 34px; }
     <div class="card">
       <div class="section-title">🛠 通用</div>
       <div class="p-row"><span>📤 备份日记数据</span><span class="p-act" onclick="exportData()">导出 JSON</span></div>
+      <div class="p-row"><span>📥 导入日记备份</span><span class="p-act" onclick="document.getElementById('importInput').click()">选择文件</span></div>
+      <input type="file" id="importInput" accept="application/json,.json" hidden>
       <div class="p-row"><span>🗺 定位城市</span><span class="p-act" id="pLocName" style="color:var(--text-sub)">未定位</span></div>
       <div class="p-row danger"><span>🗑 清空所有日记</span><span class="p-act" onclick="clearAllData()">清空</span></div>
     </div>
@@ -892,7 +938,10 @@ audio { width: 100%; margin-top: 8px; height: 34px; }
     <span class="close" onclick="closeModal()">✕</span>
     <h2 id="mTitle"></h2>
     <div class="m-line" id="mMeta"></div>
-    <button class="privacy-btn" id="mPrivacyBtn" onclick="togglePrivacy(currentModalId)"></button>
+    <div class="m-actions">
+      <button class="privacy-btn" id="mPrivacyBtn" onclick="togglePrivacy(currentModalId)"></button>
+      <button class="privacy-btn" onclick="startEdit(currentModalId)">✏️ 编辑这篇</button>
+    </div>
     <div class="content" id="mContent"></div>
     <div class="photos" id="mPhotos"></div>
     <audio id="mAudio" controls style="width:100%;margin-top:14px;display:none"></audio>
@@ -996,7 +1045,7 @@ store.forEach(it => {
 let state = { mi: null, photos: [], audioURL: null, audioBlob: null,
               locName: null, lat: null, lon: null,
               weatherText: null, weatherIcon: null,
-              editDate: todayKey() };
+              editDate: todayKey(), editId: null };
 let viewYear = new Date().getFullYear(), viewMonth = new Date().getMonth();
 let selectedDay = todayKey();
 
@@ -1279,6 +1328,52 @@ function exportData() {
   toast('备份文件已导出 📤');
 }
 
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    let arr;
+    try { arr = JSON.parse(reader.result); }
+    catch { toast('文件格式不对，请选择导出的 JSON 备份'); return; }
+    if (!Array.isArray(arr)) { toast('备份内容不是日记列表'); return; }
+    const valid = arr.filter(x => x && typeof x === 'object' && x.dateKey && typeof x.mi === 'number');
+    if (!valid.length) { toast('备份里没有可导入的日记'); return; }
+    const key = x => `${x.dateKey}|${x.time || ''}|${x.title || ''}|${(x.content || '').slice(0, 30)}`;
+    const seenId = new Set(store.map(x => x.id));
+    const seenKey = new Set(store.map(key));
+    let added = 0, skipped = 0;
+    const before = store.length;
+    valid.forEach(x => {
+      const dup = (x.id && seenId.has(x.id)) || seenKey.has(key(x));
+      if (dup) { skipped++; return; }
+      const item = Object.assign({}, x);
+      if (!item.id) item.id = Date.now() + Math.floor(Math.random() * 1000);
+      item.photos = Array.isArray(item.photos) ? item.photos : [];
+      item.public = !!item.public;
+      store.push(item);
+      seenId.add(item.id); seenKey.add(key(item));
+      added++;
+    });
+    if (!added) { toast(`这 ${skipped} 篇日记已经在设备里了，无需重复导入`); return; }
+    try { saveStore(); }
+    catch {
+      store = store.slice(0, before);
+      toast('存储空间不足，导入失败（可先删掉一些日记再试）');
+      return;
+    }
+    toast(`导入成功 ${added} 篇${skipped ? `，跳过重复 ${skipped} 篇` : ''} 🐟`);
+    renderCalendar(); renderDayList(); renderProfile();
+    if (document.getElementById('searchResults').style.display !== 'none') renderSearch();
+    if (document.getElementById('oceanBody').style.display !== 'none') renderOcean();
+    if (document.getElementById('statsBody').style.display !== 'none') renderStats();
+  };
+  reader.readAsText(file);
+}
+document.getElementById('importInput').onchange = e => {
+  const f = e.target.files[0];
+  if (f) importData(f);
+  e.target.value = '';
+};
+
 function clearAllData() {
   if (!confirm('确定要清空所有日记吗？\n（包含照片和语音记录，此操作无法恢复，建议先导出备份）')) return;
   localStorage.removeItem('xinqing_diary');
@@ -1354,6 +1449,7 @@ function buildDiaryItem(item) {
       ${item.audio ? '<span class="tag">🎙️ 语音</span>' : ''}
       ${item.photos.length ? `<span class="tag">📷 ${item.photos.length}张</span>` : ''}
       ${item.public ? '<span class="tag">🌐 公开</span>' : ''}
+      <button class="edit-btn">编辑</button>
       <button class="del-btn">删除</button>
     </div>
     ${item.photos.length ? `<div class="thumbs">${item.photos.slice(0,3).map(p => `<img src="${p}">`).join('')}</div>` : ''}
@@ -1363,10 +1459,122 @@ function buildDiaryItem(item) {
     if (confirm('确定删除这篇日记吗？')) {
       store = store.filter(x => x.id !== item.id);
       saveStore(); renderCalendar(); renderDayList();
+      if (document.getElementById('searchResults').style.display !== 'none') renderSearch();
+      if (document.getElementById('oceanBody').style.display !== 'none') renderOcean();
+      if (document.getElementById('statsBody').style.display !== 'none') renderStats();
     }
+  };
+  d.querySelector('.edit-btn').onclick = e => {
+    e.stopPropagation();
+    startEdit(item.id);
   };
   d.onclick = () => openModal(item);
   return d;
+}
+
+/* ================= 搜索 / 心情筛选 ================= */
+const searchState = { q: '', mi: null, open: false };
+function renderSearch() {
+  const q = searchState.q.trim().toLowerCase();
+  const active = searchState.open || q || searchState.mi !== null;
+  const calCard = document.querySelector('#calBody .cal-card');
+  const dayTitle = document.querySelector('#calBody .day-title');
+  const dayList = document.getElementById('dayList');
+  const res = document.getElementById('searchResults');
+  document.getElementById('searchClear').style.display = active ? 'block' : 'none';
+  if (!active) {
+    calCard.style.display = ''; dayTitle.style.display = ''; dayList.style.display = '';
+    res.style.display = 'none';
+    return;
+  }
+  calCard.style.display = 'none'; dayTitle.style.display = 'none'; dayList.style.display = 'none';
+  res.style.display = 'block';
+
+  const items = store.filter(x => {
+    if (searchState.mi !== null && x.mi !== searchState.mi) return false;
+    if (!q) return true;
+    return (x.title || '').toLowerCase().includes(q) || (x.content || '').toLowerCase().includes(q);
+  }).sort((a, b) => (b.dateKey + (b.time || '')).localeCompare(a.dateKey + (a.time || '')));
+
+  const moodCounts = new Map();
+  store.forEach(x => moodCounts.set(x.mi, (moodCounts.get(x.mi) || 0) + 1));
+  let chips = `<div class="filter-row"><div class="f-chip ${searchState.mi === null ? 'active' : ''}" onclick="setMoodFilter(null)">全部 ${store.length}</div>`;
+  [...moodCounts.entries()].sort((a, b) => b[1] - a[1]).forEach(([mi, c]) => {
+    chips += `<div class="f-chip ${searchState.mi === mi ? 'active' : ''}" onclick="setMoodFilter(${mi})">${doodleSVG(mi, 18)}${(MOODS[mi] || MOODS[1]).n} ${c}</div>`;
+  });
+  chips += '</div>';
+
+  res.innerHTML = chips;
+  if (!items.length) {
+    res.innerHTML += store.length
+      ? `<div class="empty">没有找到相关日记\n换个关键词，或者点「全部」看看 🫧</div>`
+      : `<div class="empty">还没有日记，先写一篇吧 🐟</div>`;
+    return;
+  }
+  res.innerHTML += `<div class="search-hint">找到 ${items.length} 篇相关日记</div>`;
+  let lastDate = '';
+  items.forEach(it => {
+    if (it.dateKey !== lastDate) {
+      lastDate = it.dateKey;
+      const dd = document.createElement('div');
+      dd.className = 'result-date';
+      const cn = dateCN(it.dateKey), rl = relLabel(it.dateKey);
+      dd.textContent = rl === cn ? cn : `${cn} · ${rl}`;
+      res.appendChild(dd);
+    }
+    res.appendChild(buildDiaryItem(it));
+  });
+}
+function setMoodFilter(mi) { searchState.mi = mi; renderSearch(); }
+document.getElementById('searchInput').oninput = e => {
+  searchState.q = e.target.value;
+  if (searchState.q) searchState.open = true;
+  renderSearch();
+};
+document.getElementById('searchInput').onfocus = () => {
+  if (!searchState.open) { searchState.open = true; renderSearch(); }
+};
+document.getElementById('searchClear').onclick = () => {
+  searchState.q = '';
+  searchState.mi = null;
+  searchState.open = false;
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchInput').blur();
+  renderSearch();
+};
+
+/* ================= 编辑已有日记 ================= */
+function startEdit(id) {
+  const it = store.find(x => x.id === id);
+  if (!it) return;
+  closeModal();
+  state.editId = id;
+  state.editDate = it.dateKey;
+  state.mi = it.mi;
+  state.photos = [...(it.photos || [])];
+  state.audioURL = it.audio || null;
+  state.audioBlob = null;
+  state.dayWxCache = it.weather ? { key: '__existing', icon: it.weatherIcon || '🌤️', text: it.weather } : null;
+  if (it.mi >= COMMON_COUNT) moodExpanded = true;
+  document.getElementById('titleInput').value = it.title === '无题' ? '' : it.title;
+  document.getElementById('contentInput').value = it.content || '';
+  renderMoodGrid();
+  renderPhotos();
+  const p = document.getElementById('audioPlayer');
+  if (it.audio) { p.src = it.audio; p.style.display = 'block'; }
+  else { p.style.display = 'none'; p.removeAttribute('src'); }
+  document.getElementById('recordTime').textContent = '00:00';
+  document.getElementById('recordHint').textContent = it.audio ? '已有录音，可重新录制覆盖' : '点击开始录音';
+  const fest = getFestival(it.dateKey);
+  const plan = getDayPlan(it.dateKey);
+  let dateText = dateCN(it.dateKey) + (fest ? ` · 🎉${fest.name}` : '');
+  if (plan) dateText += plan.type === 'rest' ? '（休）' : `（${plan.name}）`;
+  document.getElementById('editorDate').textContent = dateText;
+  document.getElementById('editorTitle').textContent = '编辑日记';
+  document.getElementById('dayWxIcon').textContent = it.weatherIcon || '🌤️';
+  document.getElementById('dayWeatherVal').textContent = it.weather ? `当天：${it.weather}` : '这篇日记没有记录天气';
+  showEditor();
+  window.scrollTo(0, 0);
 }
 
 /* ================= 隐私：公开 / 私密 ================= */
@@ -1774,6 +1982,7 @@ renderMoodGrid();
 
 function startEditor(dateKey) {
   state.editDate = dateKey;
+  state.editId = null;
   const fest = getFestival(dateKey);
   const plan = getDayPlan(dateKey);
   let dateText = dateCN(dateKey) + (fest ? ` · 🎉${fest.name}` : '');
@@ -1787,6 +1996,7 @@ function resetEditor() {
   document.getElementById('titleInput').value = '';
   document.getElementById('contentInput').value = '';
   state.mi = null; state.photos = []; state.audioURL = null; state.audioBlob = null;
+  state.editId = null; state.dayWxCache = null;
   renderMoodGrid();
   renderPhotos();
   const p = document.getElementById('audioPlayer');
@@ -2023,28 +2233,40 @@ document.getElementById('saveBtn').onclick = () => {
   }
   const n = new Date();
   const dateKey = state.editDate;
-  const entry = {
-    id: Date.now(),
+  const fields = {
     dateKey: dateKey,
-    time: `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`,
     title: document.getElementById('titleInput').value.trim() || '无题',
     content: document.getElementById('contentInput').value.trim(),
     mi: state.mi,
     photos: state.photos,
-    public: false,
-    audio: null,
     location: state.locName,
     weather: state.dayWxCache ? state.dayWxCache.text : state.weatherText,
     weatherIcon: state.dayWxCache ? state.dayWxCache.icon : state.weatherIcon
   };
+  const editing = state.editId !== null ? store.find(x => x.id === state.editId) : null;
+  const entry = editing
+    ? Object.assign(editing, fields)
+    : Object.assign({
+        id: Date.now(),
+        time: `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`,
+        public: false,
+        audio: null
+      }, fields);
   const doSave = () => {
-    store.unshift(entry);
-    try { saveStore(); }
-    catch { toast('存储空间不足，请删掉一些旧日记'); store.shift(); return; }
-    toast(dateKey === todayKey() ? '日记已保存，鱼不会忘啦 🐟' : '补充完成 ✨');
+    if (!editing) {
+      store.unshift(entry);
+      try { saveStore(); }
+      catch { toast('存储空间不足，请删掉一些旧日记'); store.shift(); return; }
+    } else {
+      try { saveStore(); }
+      catch { toast('存储空间不足，请删掉一些旧日记'); return; }
+    }
+    toast(editing ? '日记已更新 ✨' : (dateKey === todayKey() ? '日记已保存，鱼不会忘啦 🐟' : '补充完成 ✨'));
     selectedDay = dateKey;
     viewYear = +dateKey.slice(0,4); viewMonth = +dateKey.slice(5,7) - 1;
+    state.editId = null;
     showCalendar();
+    if (document.getElementById('searchResults').style.display !== 'none') renderSearch();
   };
   if (state.audioBlob) {
     if (state.audioBlob.size > 3 * 1024 * 1024) { toast('录音太长啦，请控制在 1 分钟内'); return; }
