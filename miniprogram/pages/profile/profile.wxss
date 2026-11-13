@@ -1,0 +1,35 @@
+/* 个人页样式 */
+.hero { display: flex; flex-direction: column; align-items: center; padding: 44rpx 30rpx 36rpx; }
+.avatar {
+  width: 150rpx; height: 154rpx;
+  border-radius: 50%; background: var(--primary-light);
+  padding: 12rpx; box-sizing: border-box;
+  box-shadow: inset 0 0 0 4rpx var(--primary-soft);
+}
+.name { font-size: 34rpx; font-weight: 700; color: var(--text); margin-top: 18rpx; }
+.slogan { font-size: 22rpx; color: var(--text-sub); margin-top: 8rpx; }
+
+.p-stats { display: flex; gap: 14rpx; }
+.p-stat { flex: 1; background: var(--bg-chip, #f4f7f7); border-radius: 20rpx; padding: 20rpx 6rpx; text-align: center; }
+.p-stat .v { font-size: 36rpx; font-weight: 700; color: var(--primary); }
+.p-stat .l { font-size: 20rpx; color: var(--text-sub); margin-top: 6rpx; }
+
+.p-themes { display: flex; gap: 16rpx; }
+.p-th {
+  flex: 1; border-radius: 22rpx; padding: 18rpx 8rpx;
+  border: 3rpx solid transparent; background: var(--bg-chip, #f4f7f7);
+  display: flex; flex-direction: column; align-items: center; gap: 12rpx;
+  font-size: 21rpx; color: var(--text-sub);
+}
+.p-th.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.p-th .sw { width: 60rpx; height: 60rpx; border-radius: 50%; }
+
+.p-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24rpx 4rpx; font-size: 27rpx; color: var(--text);
+}
+.p-row + .p-row { border-top: 1rpx dashed rgba(0,0,0,.08); }
+.p-row .act { font-size: 24rpx; color: var(--primary); }
+.p-row .loc { font-size: 23rpx; color: var(--text-sub); max-width: 320rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.p-row.danger .act { color: var(--danger); }
+.foot { text-align: center; font-size: 21rpx; color: var(--text-sub); margin: 30rpx 0 10rpx; }

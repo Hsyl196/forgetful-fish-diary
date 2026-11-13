@@ -1,0 +1,16 @@
+{
+  "description": "鱼的记忆 · 心情日记小程序",
+  "appid": "touristappid",
+  "projectname": "fish-diary",
+  "compileType": "miniprogram",
+  "libVersion": "3.0.0",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "ignoreUploadUnusedFiles": true
+  },
+  "condition": {}
+}

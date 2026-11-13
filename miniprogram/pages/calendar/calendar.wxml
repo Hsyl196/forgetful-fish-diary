@@ -1,0 +1,144 @@
+<view class="page-wrap theme-{{theme}}">
+
+  <!-- 顶部 -->
+  <view class="header">
+    <view class="h-title">鱼的记忆 🐟</view>
+    <view class="h-sub">鱼的记忆只有7秒，但日记替你记得 🫧</view>
+    <view class="weather-card">
+      <view class="w-left">
+        <text class="w-icon">{{weather ? weather.icon : (locLoading ? '⏳' : '🌤️')}}</text>
+        <view>
+          <view class="w-temp">{{weather ? weather.temp : (locLoading ? '…' : '--°')}}</view>
+          <view class="w-desc">{{weather ? weather.desc : '暂无天气'}}</view>
+        </view>
+      </view>
+      <view class="w-right" bindtap="refreshLoc">{{locName}} 🔄</view>
+    </view>
+  </view>
+
+  <!-- 搜索 -->
+  <view class="search-wrap">
+    <view class="search-bar">
+      <text class="s-ico">🔍</text>
+      <input class="s-input" placeholder="搜索日记的标题或内容…" placeholder-class="s-ph"
+             value="{{searchQ}}" bindinput="onSearchInput" bindfocus="onSearchFocus" />
+      <text class="s-clear" wx:if="{{searchOpen}}" bindtap="clearSearch">✕</text>
+    </view>
+  </view>
+
+  <!-- 筛选模式 -->
+  <block wx:if="{{searchOpen}}">
+    <scroll-view scroll-x class="filter-row">
+      <view wx:for="{{chips}}" wx:key="mi"
+            class="f-chip {{filterMi === item.mi ? 'active' : ''}}"
+            data-mi="{{item.mi}}" bindtap="tapChip">
+        <image wx:if="{{item.img}}" class="f-img" src="{{item.img}}" />
+        <text>{{item.name}} {{item.count}}</text>
+      </view>
+    </scroll-view>
+    <view class="search-hint">{{resultCount ? '找到 ' + resultCount + ' 篇相关日记' : '没有找到相关日记'}}</view>
+    <view wx:for="{{results}}" wx:key="id" class="diary-item" data-id="{{item.id}}" bindtap="openDetail">
+      <view class="top">
+        <image class="mood-img" src="{{item.moodImg}}" />
+        <view class="title">{{item.title}}</view>
+        <view class="time">{{item.dateCN}}</view>
+      </view>
+      <view class="preview">{{item.content || '（只有照片和语音）'}}</view>
+      <view class="meta-row">
+        <text wx:if="{{item.weather}}" class="tag">{{item.weather}}</text>
+        <text wx:if="{{item.location}}" class="tag">📍 {{item.location}}</text>
+        <text wx:if="{{item.audio}}" class="tag">🎙️ 语音</text>
+        <text wx:if="{{item.photos.length}}" class="tag">📷 {{item.photos.length}}张</text>
+        <text wx:if="{{item.public}}" class="tag pub">🌐 公开</text>
+        <view class="edit-btn" data-id="{{item.id}}" catchtap="editEntry">编辑</view>
+        <view class="del-btn" data-id="{{item.id}}" catchtap="deleteEntry">删除</view>
+      </view>
+    </view>
+    <view wx:if="{{!resultCount}}" class="empty">没有找到相关日记
+换个关键词试试 🫧</view>
+  </block>
+
+  <!-- 日历模式 -->
+  <block wx:else>
+    <view class="cal-card card">
+      <view class="cal-head">
+        <view class="month">{{monthText}}</view>
+        <view class="nav">
+          <view class="nav-btn" bindtap="prevMonth">‹</view>
+          <view class="nav-btn" bindtap="nextMonth">›</view>
+        </view>
+      </view>
+      <view class="cal-week">
+        <view>日</view><view>一</view><view>二</view><view>三</view><view>四</view><view>五</view><view>六</view>
+      </view>
+      <view class="cal-grid">
+        <view wx:for="{{cells}}" wx:key="index" class="cal-cell" data-key="{{item.key || ''}}" bindtap="tapDay">
+          <view wx:if="{{item.day}}" class="cal-day {{item.selected ? 'sel' : ''}}">
+            <view class="rest-tag" wx:if="{{item.plan === '休'}}">休</view>
+            <view class="work-tag" wx:if="{{item.plan === '班'}}">班</view>
+            <view class="d-num">{{item.day}}</view>
+            <view class="fest {{item.legal ? 'legal' : ''}}" wx:if="{{item.fest}}">{{item.fest}}</view>
+            <image wx:if="{{item.count}}" class="mood-badge" src="/assets/moods/m{{item.mi}}.png" />
+            <view class="count" wx:if="{{item.count > 1}}">{{item.count}}</view>
+          </view>
+        </view>
+      </view>
+      <view class="cal-legend">
+        <view class="lg"><view class="sq rest-tag">休</view><text>法定节假日</text></view>
+        <view class="lg"><view class="sq work-tag">班</view><text>调休上班</text></view>
+      </view>
+    </view>
+
+    <view class="day-title">
+      <text>{{selectedText}}</text>
+      <text class="write-link" bindtap="writeForDay">✏️ 补写 / 新写这天日记</text>
+    </view>
+    <view wx:for="{{entries}}" wx:key="id" class="diary-item" data-id="{{item.id}}" bindtap="openDetail">
+      <view class="top">
+        <image class="mood-img" src="{{item.moodImg}}" />
+        <view class="title">{{item.title}}</view>
+        <view class="time">{{item.time}}</view>
+      </view>
+      <view class="preview">{{item.content || '（只有照片和语音）'}}</view>
+      <view class="meta-row">
+        <text wx:if="{{item.weather}}" class="tag">{{item.weather}}</text>
+        <text wx:if="{{item.location}}" class="tag">📍 {{item.location}}</text>
+        <text wx:if="{{item.audio}}" class="tag">🎙️ 语音</text>
+        <text wx:if="{{item.photos.length}}" class="tag">📷 {{item.photos.length}}张</text>
+        <text wx:if="{{item.public}}" class="tag pub">🌐 公开</text>
+        <view class="edit-btn" data-id="{{item.id}}" catchtap="editEntry">编辑</view>
+        <view class="del-btn" data-id="{{item.id}}" catchtap="deleteEntry">删除</view>
+      </view>
+      <view class="thumbs" wx:if="{{item.photos.length}}">
+        <image wx:for="{{item.photos}}" wx:for-item="p" wx:key="*this" src="{{p}}" mode="aspectFill" />
+      </view>
+    </view>
+    <view wx:if="{{!entries.length}}" class="empty">{{selectedText}}还没有日记
+鱼的记忆只有7秒，快替它记下来吧 🫧</view>
+  </block>
+
+  <!-- 悬浮 ＋ -->
+  <view class="fab" bindtap="newToday">＋</view>
+
+  <!-- 详情弹窗 -->
+  <view class="modal-mask {{detailShow ? 'show' : ''}}" bindtap="closeDetail">
+    <view class="modal-box" wx:if="{{detail}}" catchtap="noop">
+      <text class="close" bindtap="closeDetail">✕</text>
+      <view class="m-title">
+        <image src="{{detail.moodImg}}" />
+        <text>{{detail.title}}</text>
+      </view>
+      <view class="m-meta">{{detail.meta}}</view>
+      <view class="m-content">{{detail.content}}</view>
+      <view class="m-photos" wx:if="{{detail.photos.length}}">
+        <image wx:for="{{detail.photos}}" wx:key="*this" src="{{item}}" data-url="{{item}}" bindtap="previewPhoto" mode="aspectFill" />
+      </view>
+      <audio wx:if="{{detail.audio}}" class="m-audio" src="{{detail.audio}}" controls></audio>
+      <view class="m-actions">
+        <view class="p-btn {{detail.public ? 'hl' : ''}}" bindtap="togglePrivacy">{{detail.public ? '🌐 当前公开 · 点击设为私密' : '🔒 当前私密 · 点击设为公开'}}</view>
+        <view class="p-btn hl" data-id="{{detail.id}}" bindtap="editEntry">✏️ 编辑这篇</view>
+        <view class="p-btn" style="color:var(--danger)" data-id="{{detail.id}}" bindtap="deleteEntry">🗑 删除</view>
+      </view>
+    </view>
+  </view>
+</view>

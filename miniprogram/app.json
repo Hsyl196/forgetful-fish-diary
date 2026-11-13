@@ -1,0 +1,33 @@
+{
+  "pages": [
+    "pages/calendar/calendar",
+    "pages/ocean/ocean",
+    "pages/stats/stats",
+    "pages/profile/profile",
+    "pages/editor/editor"
+  ],
+  "window": {
+    "navigationBarTitleText": "鱼的记忆",
+    "navigationBarBackgroundColor": "#0abab5",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f2f8f7"
+  },
+  "tabBar": {
+    "color": "#9aa5b1",
+    "selectedColor": "#0abab5",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/calendar/calendar", "text": "日历", "iconPath": "assets/icons/cal.png", "selectedIconPath": "assets/icons/cal-a.png" },
+      { "pagePath": "pages/ocean/ocean", "text": "海洋", "iconPath": "assets/icons/ocean.png", "selectedIconPath": "assets/icons/ocean-a.png" },
+      { "pagePath": "pages/stats/stats", "text": "统计", "iconPath": "assets/icons/stats.png", "selectedIconPath": "assets/icons/stats-a.png" },
+      { "pagePath": "pages/profile/profile", "text": "我的", "iconPath": "assets/icons/me.png", "selectedIconPath": "assets/icons/me-a.png" }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": { "desc": "用于自动获取你所在城市的天气" },
+    "scope.record": { "desc": "用于录制语音日记" }
+  },
+  "requiredPrivateInfos": ["getLocation"],
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,19 @@
+/* 统计页样式 */
+.chips { display: flex; gap: 16rpx; }
+.chip {
+  flex: 1; background: var(--bg-chip, #f4f7f7); border-radius: 20rpx;
+  padding: 22rpx 8rpx; text-align: center;
+}
+.chip .v { font-size: 38rpx; font-weight: 700; color: var(--primary); }
+.chip .l { font-size: 21rpx; color: var(--text-sub); margin-top: 6rpx; }
+
+.pie-wrap { display: flex; justify-content: center; padding: 10rpx 0 20rpx; }
+.pie { width: 400rpx; height: 400rpx; }
+
+.legend { margin-top: 10rpx; }
+.lg-row { display: flex; align-items: center; gap: 14rpx; padding: 14rpx 0; }
+.lg-img { width: 44rpx; height: 46rpx; }
+.lg-name { font-size: 25rpx; color: var(--text); width: 110rpx; }
+.lg-bar-wrap { flex: 1; height: 14rpx; background: rgba(0,0,0,.06); border-radius: 8rpx; overflow: hidden; }
+.lg-bar { height: 100%; border-radius: 8rpx; }
+.lg-val { font-size: 21rpx; color: var(--text-sub); width: 160rpx; text-align: right; }

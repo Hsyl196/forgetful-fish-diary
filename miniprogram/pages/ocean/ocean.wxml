@@ -1,0 +1,57 @@
+<view class="page-wrap theme-{{theme}}">
+
+  <view class="ocean" style="background-image:url('{{oceanBg}}')">
+    <view wx:for="{{fishes}}" wx:key="id"
+          class="fish-wrap" style="top:{{item.top}}%; animation-duration:{{item.dur}}s; animation-delay:{{item.delay}}s;">
+      <image class="fish-img bob" style="width:{{item.w}}rpx; animation-duration:{{item.bobDur}}s"
+             src="{{item.img}}" data-id="{{item.id}}" bindtap="openFish" />
+    </view>
+    <view wx:for="{{bubbles}}" wx:key="index" class="bub"
+          style="left:{{item.left}}%; width:{{item.s}}rpx; height:{{item.s}}rpx; animation-duration:{{item.dur}}s; animation-delay:{{item.delay}}s;"></view>
+    <view class="fish-label">{{fishes.length ? '🌊 海里游着 ' + fishes.length + ' 条公开的小鱼 · 点击查看' : '海里还没有小鱼'}}</view>
+  </view>
+
+  <view class="day-title">
+    <text>🌐 公开日记管理</text>
+    <text class="sub">点击小鱼可查看日记</text>
+  </view>
+
+  <view wx:for="{{pubList}}" wx:key="id" class="diary-item" data-id="{{item.id}}" bindtap="openDetail">
+    <view class="top">
+      <image class="mood-img" src="{{item.moodImg}}" />
+      <view class="title">{{item.title}}</view>
+      <view class="time">{{item.time}}</view>
+    </view>
+    <view class="preview">{{item.content || '（只有照片和语音）'}}</view>
+    <view class="meta-row">
+      <text wx:if="{{item.weather}}" class="tag">{{item.weather}}</text>
+      <text wx:if="{{item.location}}" class="tag">📍 {{item.location}}</text>
+      <view class="edit-btn" data-id="{{item.id}}" catchtap="editEntry">编辑</view>
+      <view class="del-btn" data-id="{{item.id}}" catchtap="deleteEntry">删除</view>
+    </view>
+  </view>
+  <view wx:if="{{!pubList.length}}" class="empty">还没有公开的日记
+在日记详情里点「设为公开」，它就会游进这片海 🌊</view>
+
+  <!-- 详情弹窗 -->
+  <view class="modal-mask {{detailShow ? 'show' : ''}}" bindtap="closeDetail">
+    <view class="modal-box" wx:if="{{detail}}" catchtap="stopBubble">
+      <text class="close" bindtap="closeDetail">✕</text>
+      <view class="m-title">
+        <image src="{{detail.moodImg}}" />
+        <text>{{detail.title}}</text>
+      </view>
+      <view class="m-meta">{{detail.meta}}</view>
+      <view class="m-content">{{detail.content}}</view>
+      <view class="m-photos" wx:if="{{detail.photos.length}}">
+        <image wx:for="{{detail.photos}}" wx:key="*this" src="{{item}}" data-url="{{item}}" bindtap="previewPhoto" mode="aspectFill" />
+      </view>
+      <audio wx:if="{{detail.audio}}" class="m-audio" src="{{detail.audio}}" controls></audio>
+      <view class="m-actions">
+        <view class="p-btn {{detail.public ? 'hl' : ''}}" bindtap="togglePrivacy">{{detail.public ? '🌐 设为私密' : '🔒 设为公开'}}</view>
+        <view class="p-btn hl" data-id="{{detail.id}}" bindtap="editEntry">✏️ 编辑</view>
+        <view class="p-btn" style="color:var(--danger)" data-id="{{detail.id}}" bindtap="deleteEntry">🗑 删除</view>
+      </view>
+    </view>
+  </view>
+</view>

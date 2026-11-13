@@ -1,0 +1,30 @@
+<view class="page-wrap theme-{{theme}}">
+
+  <view wx:if="{{!hasData}}" class="card"><view class="empty">还没有数据，先写几篇日记吧 🐟</view></view>
+
+  <block wx:else>
+    <view class="card">
+      <view class="chips">
+        <view wx:for="{{chips}}" wx:key="label" class="chip">
+          <view class="v">{{item.value}}</view>
+          <view class="l">{{item.label}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="section-title">📊 心情占比</view>
+      <view class="pie-wrap">
+        <canvas type="2d" id="pie" class="pie"></canvas>
+      </view>
+      <view class="legend">
+        <view wx:for="{{legend}}" wx:key="mi" class="lg-row">
+          <image class="lg-img" src="{{item.img}}" />
+          <text class="lg-name">{{item.name}}</text>
+          <view class="lg-bar-wrap"><view class="lg-bar" style="width:{{item.pct}}%; background:{{item.color}}"></view></view>
+          <text class="lg-val">{{item.cnt}}篇 · {{item.pct}}%</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

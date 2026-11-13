@@ -1,0 +1,98 @@
+/* 日历页样式 */
+.header {
+  background:
+    radial-gradient(circle at 88% 12%, rgba(255,255,255,.28), transparent 42%),
+    radial-gradient(circle at 8% 90%, rgba(232,195,122,.20), transparent 45%),
+    linear-gradient(140deg, var(--primary-deep) 0%, var(--primary) 52%, var(--primary-soft) 100%);
+  color: #fff; padding: 34rpx 32rpx 30rpx;
+  border-radius: 0 0 48rpx 48rpx;
+}
+.h-title { font-size: 40rpx; font-weight: 700; letter-spacing: 2rpx; }
+.h-sub { font-size: 22rpx; opacity: .8; margin-top: 8rpx; }
+.weather-card {
+  margin-top: 24rpx; background: rgba(255,255,255,.18);
+  border: 1rpx solid rgba(255,255,255,.25); border-radius: 26rpx;
+  padding: 22rpx 26rpx; display: flex; align-items: center; justify-content: space-between;
+}
+.w-left { display: flex; align-items: center; gap: 20rpx; }
+.w-icon { font-size: 52rpx; }
+.w-temp { font-size: 36rpx; font-weight: 700; }
+.w-desc { font-size: 22rpx; opacity: .85; }
+.w-right { font-size: 22rpx; opacity: .9; text-align: right; max-width: 300rpx; }
+
+/* 搜索 */
+.search-wrap { padding: 24rpx 24rpx 0; }
+.search-bar {
+  display: flex; align-items: center; gap: 14rpx;
+  background: var(--card); border-radius: 24rpx; padding: 18rpx 26rpx;
+  box-shadow: 0 4rpx 18rpx rgba(0,0,0,.05);
+}
+.s-ico { font-size: 26rpx; opacity: .5; }
+.s-input { flex: 1; font-size: 26rpx; color: var(--text); }
+.s-ph { color: var(--text-sub); }
+.s-clear { font-size: 26rpx; color: var(--text-sub); padding: 4rpx 10rpx; }
+.filter-row { white-space: nowrap; padding: 20rpx 16rpx 4rpx; }
+.f-chip {
+  display: inline-flex; align-items: center; gap: 8rpx;
+  background: var(--card); border: 3rpx solid transparent; border-radius: 40rpx;
+  padding: 8rpx 20rpx 8rpx 10rpx; font-size: 23rpx; color: var(--text-sub);
+  margin-left: 10rpx;
+}
+.f-chip.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.f-img { width: 34rpx; height: 36rpx; }
+.search-hint { font-size: 22rpx; color: var(--text-sub); padding: 14rpx 28rpx 4rpx; }
+
+/* 日历 */
+.cal-card { padding-bottom: 18rpx; }
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12rpx; }
+.cal-head .month { font-size: 30rpx; font-weight: 700; color: var(--text); }
+.cal-head .nav { display: flex; gap: 12rpx; }
+.nav-btn {
+  width: 56rpx; height: 56rpx; border-radius: 50%; background: var(--bg-card, #f4f6f8);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 34rpx; color: var(--text-sub);
+}
+.cal-week { display: flex; }
+.cal-week view { flex: 1; text-align: center; font-size: 21rpx; color: var(--text-sub); padding: 10rpx 0; }
+.cal-grid { display: flex; flex-wrap: wrap; }
+.cal-cell { width: calc(100% / 7); box-sizing: border-box; padding: 4rpx; }
+.cal-day {
+  position: relative; height: 96rpx; border-radius: 14rpx; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.02);
+}
+.cal-day.sel { background: var(--primary-light); box-shadow: inset 0 0 0 3rpx var(--primary); }
+.d-num { font-size: 26rpx; color: var(--text); line-height: 1.2; }
+.fest { font-size: 16rpx; color: #f5a623; transform: scale(.85); white-space: nowrap; line-height: 1.2; }
+.fest.legal { color: #f79bb0; font-weight: 600; }
+.rest-tag, .work-tag {
+  position: absolute; top: 2rpx; left: 6rpx; font-size: 16rpx;
+  padding: 0 6rpx; border-radius: 8rpx; line-height: 26rpx; height: 26rpx;
+}
+.rest-tag { background: rgba(255,143,163,.14); color: #e8758f; border: 1rpx solid rgba(232,117,143,.4); }
+.work-tag { background: rgba(91,157,214,.12); color: #5b9dd6; border: 1rpx solid rgba(91,157,214,.4); }
+.mood-badge { position: absolute; bottom: 2rpx; right: 2rpx; width: 40rpx; height: 42rpx; }
+.count {
+  position: absolute; top: 2rpx; right: 4rpx; font-size: 17rpx;
+  background: var(--primary); color: #fff; border-radius: 16rpx;
+  min-width: 26rpx; height: 26rpx; line-height: 26rpx; text-align: center;
+}
+.cal-legend { display: flex; justify-content: flex-end; gap: 24rpx; padding: 14rpx 8rpx 0; font-size: 20rpx; color: var(--text-sub); }
+.cal-legend .lg { display: flex; align-items: center; gap: 6rpx; }
+.cal-legend .sq { width: 26rpx; height: 26rpx; border-radius: 8rpx; font-size: 16rpx; display: flex; align-items: center; justify-content: center; }
+
+.day-title {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 26rpx 28rpx 6rpx; font-size: 27rpx; font-weight: 600; color: var(--text);
+}
+.write-link { font-size: 22rpx; color: var(--primary); font-weight: 400; }
+
+/* 悬浮 ＋ */
+.fab {
+  position: fixed; bottom: 60rpx; right: 40rpx; z-index: 100;
+  width: 108rpx; height: 108rpx; border-radius: 50%;
+  background: linear-gradient(140deg, var(--primary-deep), var(--primary) 55%, var(--primary-soft));
+  color: #fff; font-size: 52rpx; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 10rpx 28rpx rgba(0,0,0,.22);
+}
+.fab:active { transform: scale(.92); }

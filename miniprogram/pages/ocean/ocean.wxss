@@ -1,0 +1,39 @@
+/* 海洋页样式 */
+.ocean {
+  position: relative; height: 700rpx; margin: 24rpx;
+  border-radius: 30rpx; overflow: hidden;
+  background-size: cover; background-position: center 78%;
+  box-shadow: 0 8rpx 30rpx rgba(0,0,0,.1);
+}
+.fish-wrap {
+  position: absolute; left: -340rpx; will-change: transform;
+  animation-name: swim; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+@keyframes swim {
+  from { transform: translateX(0); }
+  to { transform: translateX(120vw); }
+}
+.fish-img.bob { animation-name: bob; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14rpx); }
+}
+.bub {
+  position: absolute; bottom: -20rpx; border-radius: 50%;
+  background: rgba(255,255,255,.35);
+  animation-name: rise; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+@keyframes rise {
+  from { transform: translateY(0); opacity: .8; }
+  to { transform: translateY(-760rpx); opacity: 0; }
+}
+.fish-label {
+  position: absolute; bottom: 22rpx; left: 50%; transform: translateX(-50%);
+  background: rgba(10,70,90,.35); color: #fff; font-size: 22rpx;
+  padding: 12rpx 30rpx; border-radius: 28rpx; white-space: nowrap;
+}
+.day-title {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 26rpx 28rpx 6rpx; font-size: 27rpx; font-weight: 600; color: var(--text);
+}
+.day-title .sub { font-size: 21rpx; font-weight: 400; color: var(--text-sub); }

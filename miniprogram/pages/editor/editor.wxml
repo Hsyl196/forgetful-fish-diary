@@ -1,0 +1,69 @@
+<view class="page-wrap theme-{{theme}} ed-page">
+
+  <view class="edit-header">
+    <view class="back" bindtap="goBack">‹ 返回</view>
+    <view class="center">
+      <view class="t">{{editing ? '编辑日记' : (dateKey === today ? '写日记' : '补写日记')}}</view>
+      <picker mode="date" value="{{dateKey}}" start="2020-01-01" end="2030-12-31" bindchange="changeDate">
+        <view class="d">{{dateText}} ▾</view>
+      </picker>
+    </view>
+    <view style="width:100rpx"></view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">今天的心情 <text class="hint">鱼选一张最贴近的小脸吧</text></view>
+    <view class="mood-grid">
+      <view wx:for="{{(moodExpanded ? allMoods : commonMoods)}}" wx:key="mi"
+            class="mood-item {{selMi === item.mi ? 'active' : ''}}"
+            data-mi="{{item.mi}}" bindtap="pickMood">
+        <image class="m-img" src="{{item.img}}" />
+        <text class="m-name">{{item.name}}</text>
+      </view>
+      <view class="mood-toggle" bindtap="expandMood">
+        <text>{{moodExpanded ? '⌃ 收起' : '⌄ 更多心情'}}</text>
+      </view>
+    </view>
+
+    <view class="env-row">
+      <text class="em">📍</text>
+      <text class="val">{{locName}}</text>
+      <text class="act" bindtap="manualCity">手动输入</text>
+      <text class="act" bindtap="autoLoc">重新定位</text>
+    </view>
+    <view class="env-row">
+      <text class="em">{{weatherIcon || '🌤️'}}</text>
+      <text class="val">{{weatherText ? '当天：' + weatherText : '定位后自动查询当天天气'}}</text>
+    </view>
+
+    <input class="title-input" placeholder="给这一天起个标题吧～（不然鱼就忘了）" placeholder-class="ph"
+           value="{{title}}" bindinput="onTitle" />
+    <textarea class="content-input" placeholder="记录一下发生的事、想说的话…（趁鱼还记得）" placeholder-class="ph"
+              value="{{content}}" bindinput="onContent" maxlength="2000" auto-height />
+
+    <view class="section-title" style="margin-top:20rpx">📸 照片 <text class="hint">最多 6 张</text></view>
+    <view class="photo-row">
+      <view wx:for="{{photos}}" wx:key="*this" class="photo-thumb">
+        <image src="{{item}}" data-url="{{item}}" bindtap="previewPhoto" mode="aspectFill" />
+        <view class="del" data-i="{{index}}" catchtap="delPhoto">✕</view>
+      </view>
+      <view wx:if="{{photos.length < maxPhotos}}" class="add-photo" bindtap="addPhoto">
+        <view class="plus">＋</view>
+        <text>添加照片</text>
+      </view>
+    </view>
+
+    <view class="section-title" style="margin-top:20rpx">🎤 语音 <text class="hint">点击开始 / 再点停止</text></view>
+    <view class="rec-row">
+      <view class="rec-btn {{recording ? 'recording' : ''}}" bindtap="toggleRecord">{{recording ? '⏹' : '🎤'}}</view>
+      <view class="rec-info">
+        <view class="rec-time">{{recTime}}</view>
+        <view class="rec-hint">{{recording ? '正在录音，点击停止' : (audioPath ? '已有录音，可试听或重录' : '点击开始录音')}}</view>
+      </view>
+      <text wx:if="{{audioPath && !recording}}" class="rec-act" bindtap="playAudio">▶ 试听</text>
+      <text wx:if="{{audioPath && !recording}}" class="rec-act del" bindtap="delAudio">✕ 删除</text>
+    </view>
+  </view>
+
+  <view class="save-btn" bindtap="save">{{editing ? '保存修改 ✨' : '保存日记 ✨'}}</view>
+</view>

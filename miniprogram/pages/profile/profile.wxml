@@ -1,0 +1,40 @@
+<view class="page-wrap theme-{{theme}}">
+
+  <view class="card hero">
+    <image class="avatar" src="{{avatar}}" />
+    <view class="name">鱼的记忆 🐟</view>
+    <view class="slogan">鱼的记忆只有7秒，但日记替你记得 🫧</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">📈 我的数据</view>
+    <view class="p-stats" wx:if="{{stats}}">
+      <view class="p-stat"><view class="v">{{stats.total}}</view><view class="l">日记篇数</view></view>
+      <view class="p-stat"><view class="v">{{stats.days}}</view><view class="l">记录天数</view></view>
+      <view class="p-stat"><view class="v">{{stats.streak}}</view><view class="l">连续记录</view></view>
+      <view class="p-stat"><view class="v">{{stats.photos}}</view><view class="l">照片总数</view></view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">🎨 主题皮肤</view>
+    <view class="p-themes">
+      <view wx:for="{{themes}}" wx:key="key"
+            class="p-th {{theme === item.key ? 'active' : ''}}"
+            data-t="{{item.key}}" bindtap="pickTheme">
+        <view class="sw" style="background:linear-gradient(135deg,{{item.c1}},{{item.c2}})"></view>
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">🛠 通用</view>
+    <view class="p-row"><text>📤 备份数据（复制到剪贴板）</text><text class="act" bindtap="exportData">备份</text></view>
+    <view class="p-row"><text>📥 从剪贴板导入备份</text><text class="act" bindtap="importData">导入</text></view>
+    <view class="p-row"><text>🗺 定位城市</text><text class="loc">{{locName}}</text></view>
+    <view class="p-row danger"><text>🗑 清空所有日记</text><text class="act" bindtap="clearData">清空</text></view>
+  </view>
+
+  <view class="foot">鱼的记忆 · 数据保存在本设备 🫧</view>
+</view>
