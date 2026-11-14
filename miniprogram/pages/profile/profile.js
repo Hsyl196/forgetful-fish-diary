@@ -1,5 +1,6 @@
 const app = getApp();
 const storeUtil = require('../../utils/store');
+const userUtil = require('../../utils/user');
 
 const THEMES = [
   { key: 'tiffany', name: '蒂芙尼蓝', c1: '#078e89', c2: '#56d8cd' },
@@ -12,22 +13,33 @@ Page({
   data: {
     theme: 'tiffany',
     themes: THEMES,
-    avatar: '/assets/moods/m1.png',
+    user: null,
     stats: null,
-    locName: '未定位'
+    locName: '未定位',
+    /* 登录浮层 */
+    loginOpen: false,
+    form: { avatar: '', nick: '' },
+    logging: false
   },
 
   onShow() {
     const theme = app.globalData.theme;
-    this.setData({ theme });
+    const user = app.globalData.user || userUtil.getUser();
+    app.setUser(user);
+    this.setData({ theme, user });
     this.render();
+    /* 从日历页提示条「去登录」跳转过来，自动打开登录浮层 */
+    if (app.globalData.autoLogin) {
+      app.globalData.autoLogin = false;
+      if (!user) this.openLogin();
+    }
   },
 
   render() {
     const store = storeUtil.loadStore();
     const days = new Set(store.map(x => x.dateKey)).size;
     const photos = store.reduce((s, x) => s + (x.photos ? x.photos.length : 0), 0);
-    const { todayKey, fmtKey } = require('../../utils/util');
+    const { fmtKey } = require('../../utils/util');
     const has = k => store.some(x => x.dateKey === k);
     const cur = new Date();
     if (!has(fmtKey(cur))) cur.setDate(cur.getDate() - 1);
@@ -40,6 +52,97 @@ Page({
     });
   },
 
+  /* ---------- 登录相关 ---------- */
+  openLogin() {
+    const u = this.data.user;
+    this.setData({
+      loginOpen: true,
+      form: { avatar: u ? u.avatar : '', nick: u ? u.nick : '' }
+    });
+  },
+  closeLogin() {
+    this.setData({ loginOpen: false });
+  },
+  noop() { },
+
+  /* 选择微信头像（open-type="chooseAvatar" 回调） */
+  onChooseAvatar(e) {
+    const url = e.detail && e.detail.avatarUrl;
+    if (url) this.setData({ 'form.avatar': url });
+  },
+
+  /* 昵称输入（type="nickname"，键盘上方会提示"使用微信昵称"） */
+  onNickInput(e) {
+    this.setData({ 'form.nick': e.detail.value || '' });
+  },
+  clearNick() {
+    this.setData({ 'form.nick': '' });
+  },
+
+  async doLogin() {
+    if (this.data.logging) return;
+    const nick = (this.data.form.nick || '').trim();
+    if (!nick) {
+      wx.showToast({ title: '先填个昵称吧', icon: 'none' });
+      return;
+    }
+    this.setData({ logging: true });
+    wx.showLoading({ title: '登录中…', mask: true });
+
+    const old = this.data.user;
+    const uid = (old && old.uid) || 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    let code = '';
+    try { code = await userUtil.loginByWechat(); } catch (e) { code = ''; }
+
+    try {
+      const openid = await userUtil.resolveOpenid(code);
+      const avatar = await userUtil.persistAvatar(this.data.form.avatar);
+
+      const user = {
+        uid: openid || uid,
+        openid: openid || '',
+        nick,
+        avatar,
+        loginAt: (old && old.loginAt) || Date.now(),
+        updatedAt: Date.now()
+      };
+      userUtil.saveUser(user);
+      app.setUser(user);
+      if (old) userUtil.removeOldAvatar(old.avatar, avatar);
+
+      let claimed = 0;
+      if (!old) claimed = userUtil.claimGuestData(user.uid);
+
+      wx.hideLoading();
+      this.setData({ user, loginOpen: false, logging: false });
+      this.render();
+      wx.showToast({
+        title: claimed ? `登录成功，${claimed} 篇日记已归到你名下 🐟` : '登录成功 🐟',
+        icon: 'none'
+      });
+    } catch (e) {
+      wx.hideLoading();
+      this.setData({ logging: false });
+      wx.showToast({ title: '登录失败，请重试', icon: 'none' });
+    }
+  },
+
+  logout() {
+    wx.showModal({
+      title: '退出登录',
+      content: '日记会保留在这个账号下，重新登录即可看到。退出后进入游客模式（游客数据独立）。',
+      success: res => {
+        if (!res.confirm) return;
+        userUtil.clearUser();
+        app.setUser(null);
+        this.setData({ user: null });
+        this.render();
+        wx.showToast({ title: '已退出登录', icon: 'none' });
+      }
+    });
+  },
+
+  /* ---------- 主题 / 数据 ---------- */
   pickTheme(e) {
     const key = e.currentTarget.dataset.t;
     app.globalData.theme = key;
@@ -95,7 +198,7 @@ Page({
       confirmColor: '#ff5c5c',
       success: res => {
         if (!res.confirm) return;
-        wx.removeStorageSync('xinqing_diary');
+        storeUtil.clearStore();
         wx.showToast({ title: '已清空，鱼的记忆重启了 🫧', icon: 'none' });
         this.render();
       }

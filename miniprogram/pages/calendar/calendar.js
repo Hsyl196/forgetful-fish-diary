@@ -10,7 +10,8 @@ Page({
     entries: [],
     searchQ: '', searchOpen: false, filterMi: -1, chips: [], results: [], resultCount: 0,
     weather: null, locName: '', locLoading: false,
-    detail: null, detailShow: false
+    detail: null, detailShow: false,
+    user: null
   },
   viewYear: new Date().getFullYear(),
   viewMonth: new Date().getMonth(),
@@ -29,10 +30,16 @@ Page({
   onShow() {
     const theme = app.globalData.theme;
     app.applyTabBarColor(theme);
-    this.setData({ theme });
+    this.setData({ theme, user: app.globalData.user || null });
     this.refresh();
   },
   onHide() { if (this.audio) { this.audio.destroy(); this.audio = null; } },
+
+  /* 未登录时顶部提示条 → 一键去登录 */
+  goLogin() {
+    app.globalData.autoLogin = true;
+    wx.switchTab({ url: '/pages/profile/profile' });
+  },
 
   refresh() {
     this.buildCalendar();

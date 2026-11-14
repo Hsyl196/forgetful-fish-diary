@@ -33,3 +33,83 @@
 .p-row .loc { font-size: 23rpx; color: var(--text-sub); max-width: 320rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .p-row.danger .act { color: var(--danger); }
 .foot { text-align: center; font-size: 21rpx; color: var(--text-sub); margin: 30rpx 0 10rpx; }
+
+/* ---- 登录相关 ---- */
+.hero-btns { display: flex; gap: 16rpx; margin-top: 22rpx; }
+.hb {
+  padding: 12rpx 30rpx; border-radius: 30rpx; font-size: 23rpx;
+  color: var(--primary); background: var(--primary-light);
+  border: 1rpx solid var(--primary-soft);
+}
+.hb.ghost { color: var(--text-sub); background: transparent; border-color: rgba(0,0,0,.1); }
+.hb:active { opacity: .7; }
+
+.login-btn {
+  margin-top: 26rpx; padding: 22rpx 64rpx; border-radius: 40rpx;
+  background: linear-gradient(140deg, var(--primary-deep), var(--primary) 55%, var(--primary-soft));
+  color: #fff; font-size: 28rpx; font-weight: 600;
+  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, .12);
+}
+.login-btn:active { opacity: .86; }
+.guest-tip { font-size: 20rpx; color: var(--text-sub); margin-top: 16rpx; }
+
+.login-mask {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99;
+  background: rgba(20, 40, 40, .42);
+  display: flex; align-items: flex-end;
+  opacity: 0; pointer-events: none; transition: opacity .22s;
+}
+.login-mask.show { opacity: 1; pointer-events: auto; }
+.login-box {
+  width: 100%; background: #fff;
+  border-radius: 36rpx 36rpx 0 0;
+  padding: 40rpx 40rpx calc(40rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  display: flex; flex-direction: column; align-items: center;
+  transform: translateY(30rpx); transition: transform .24s;
+}
+.login-mask.show .login-box { transform: translateY(0); }
+.lb-title { font-size: 34rpx; font-weight: 700; color: #2a3b3a; }
+.lb-sub { font-size: 21rpx; color: #8a9a97; margin-top: 8rpx; }
+
+/* 头像选择按钮：去掉 button 默认样式 */
+.avatar-pick {
+  margin: 30rpx 0 0; padding: 0; width: 156rpx; height: 156rpx;
+  border-radius: 50%; background: #f2f7f7; line-height: normal;
+  display: flex; align-items: center; justify-content: center;
+  border: 3rpx dashed rgba(10, 186, 181, .45);
+  overflow: hidden;
+}
+.avatar-pick::after { border: none; }
+.avatar-preview { width: 156rpx; height: 156rpx; border-radius: 50%; }
+.avatar-empty { display: flex; flex-direction: column; align-items: center; }
+.ap-plus { font-size: 44rpx; color: var(--primary); line-height: 1; }
+.ap-tip { font-size: 19rpx; color: #8a9a97; margin-top: 8rpx; }
+
+.nick-row {
+  width: 100%; margin-top: 28rpx; position: relative;
+  background: #f4f8f8; border-radius: 20rpx;
+  padding: 0 60rpx 0 26rpx; box-sizing: border-box;
+  height: 92rpx; display: flex; align-items: center;
+}
+.nick-input { flex: 1; height: 92rpx; font-size: 29rpx; color: #2a3b3a; }
+.nick-clear {
+  position: absolute; right: 20rpx; top: 50%; transform: translateY(-50%);
+  width: 40rpx; height: 40rpx; border-radius: 50%;
+  background: rgba(0, 0, 0, .08); color: #fff;
+  font-size: 20rpx; display: flex; align-items: center; justify-content: center;
+}
+.nick-tip { width: 100%; font-size: 19rpx; color: #a3b1ae; margin-top: 12rpx; }
+
+.lb-actions { width: 100%; display: flex; gap: 20rpx; margin-top: 34rpx; }
+.lb-cancel, .lb-ok {
+  flex: 1; text-align: center; padding: 24rpx 0;
+  border-radius: 22rpx; font-size: 29rpx; font-weight: 600;
+}
+.lb-cancel { background: #f2f6f6; color: #7d8d8a; }
+.lb-ok {
+  color: #fff;
+  background: linear-gradient(140deg, var(--primary-deep), var(--primary) 55%, var(--primary-soft));
+}
+.lb-ok.loading { opacity: .6; }
+.lb-note { font-size: 19rpx; color: #a3b1ae; margin-top: 18rpx; text-align: center; }

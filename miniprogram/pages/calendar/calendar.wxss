@@ -96,3 +96,16 @@
   box-shadow: 0 10rpx 28rpx rgba(0,0,0,.22);
 }
 .fab:active { transform: scale(.92); }
+
+/* 未登录提示条（嵌在顶部渐变里） */
+.login-tip {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 18rpx; padding: 14rpx 20rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, .18);
+  border: 1rpx solid rgba(255, 255, 255, .3);
+  font-size: 21rpx; color: #fff;
+}
+.login-tip:active { opacity: .8; }
+.login-tip .lt-text { opacity: .95; }
+.login-tip .lt-go { font-weight: 600; white-space: nowrap; margin-left: 12rpx; }

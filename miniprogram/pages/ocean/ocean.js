@@ -39,7 +39,11 @@ Page({
         delay: -Math.random() * 10
       });
     }
-    const pubList = pub.map(x => Object.assign({}, x, { moodImg: faceImg(x.mi) }));
+    const pubList = pub.map(x => Object.assign({}, x, {
+      moodImg: faceImg(x.mi),
+      authorName: (x.author && x.author.name) || '',
+      authorAvatar: (x.author && x.author.avatar) || ''
+    }));
     this.setData({ fishes, bubbles, pubList });
   },
 
@@ -56,6 +60,7 @@ Page({
     const fest = util.getFestival(item.dateKey);
     let meta = `${util.relLabel(item.dateKey)} ${item.time || ''} · ${item.weather || ''}`;
     if (item.location) meta += ` · 📍${item.location}`;
+    if (item.author && item.author.name) meta += ` · 🐟${item.author.name}`;
     if (fest) meta += ` · 🎉${fest.name}`;
     this.setData({
       detailShow: true,

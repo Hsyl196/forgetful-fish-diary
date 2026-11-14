@@ -24,6 +24,10 @@
     </view>
     <view class="preview">{{item.content || '（只有照片和语音）'}}</view>
     <view class="meta-row">
+      <view wx:if="{{item.authorName}}" class="author">
+        <image wx:if="{{item.authorAvatar}}" class="author-av" src="{{item.authorAvatar}}" mode="aspectFill" />
+        <text>{{item.authorName}}</text>
+      </view>
       <text wx:if="{{item.weather}}" class="tag">{{item.weather}}</text>
       <text wx:if="{{item.location}}" class="tag">📍 {{item.location}}</text>
       <view class="edit-btn" data-id="{{item.id}}" catchtap="editEntry">编辑</view>

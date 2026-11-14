@@ -1,8 +1,12 @@
 /* 数据存储 + 天气请求 */
 const { fmtKey, todayKey } = require('./util');
+const userUtil = require('./user');
 
 function loadStore() {
-  const s = wx.getStorageSync('xinqing_diary');
+  const u = userUtil.getUser();
+  // 登录态下若还有游客数据（比如刚导入备份），自动认领过来
+  if (u) userUtil.claimGuestData(u.uid);
+  const s = wx.getStorageSync(userUtil.storeKey());
   if (!s || !Array.isArray(s)) return [];
   s.forEach(it => {
     if (!it.dateKey) {
@@ -15,9 +19,12 @@ function loadStore() {
 }
 function saveStore(store) {
   try {
-    wx.setStorageSync('xinqing_diary', JSON.parse(JSON.stringify(store)));
+    wx.setStorageSync(userUtil.storeKey(), JSON.parse(JSON.stringify(store)));
     return true;
   } catch (e) { return false; }
+}
+function clearStore() {
+  try { wx.removeStorageSync(userUtil.storeKey()); } catch (e) { /* ignore */ }
 }
 
 function request(url) {
@@ -67,4 +74,4 @@ function getLocation() {
   });
 }
 
-module.exports = { loadStore, saveStore, request, fetchCurrentWeather, fetchDayWeather, geocode, reverseGeocode, getLocation };
+module.exports = { loadStore, saveStore, clearStore, request, fetchCurrentWeather, fetchDayWeather, geocode, reverseGeocode, getLocation };

@@ -22,6 +22,34 @@
 | 📸 照片 | wx.chooseMedia + 永久存储 |
 | 🎨 四套主题 | CSS 变量 + wx.setTabBarStyle 动态换色 |
 | ✏️ 编辑日记 / 🔍 搜索筛选 / 📥 备份导入 | 与网页版对齐（备份走剪贴板） |
+| 👤 微信登录 + 头像昵称 | `button open-type="chooseAvatar"` + `input type="nickname"` |
+
+## 账号与头像昵称
+
+- **入口**：底部「我的」→ 卡片上的「微信一键登录」；日历首页顶部也有提示条，点一下直达
+- **头像**：点圆形虚线框，调起微信头像选择器（`chooseAvatar`），选完自动转存为永久文件
+- **昵称**：点输入框，键盘上方会出现「使用微信昵称」，一键填入（微信官方 `type="nickname"`）
+- **数据隔离**：游客数据和各账号数据分开存储；首次登录会把本机已有的游客日记自动「认领」到该账号下（去重合并），不会丢
+- **退出登录**：日记留在原账号下，重新登录即可看到；退出后进入游客模式
+- **公开日记作者**：登录后写的日记会记录作者昵称头像，在「心情海洋」的公开列表里显示
+
+> **关于真正的账号体系**：当前 `wx.login` 只能拿到临时 code，换 openid 必须由服务端做（appsecret 不能放前端），
+> 所以默认用本机生成的 uid 作为账号标识，数据存在本设备。
+> 若开通了**微信云开发**，把环境 ID 填到 `app.js` 的 `globalData.cloudEnv`，
+> 登录时会自动调用云函数 `login` 换真实 openid，uid 即变成跨设备一致的账号 ID。
+> 再配合云数据库存日记，就能实现多设备同步（这步需要你注册云开发环境后我再帮你接）。
+
+### 云函数 `login`（接入云开发时创建）
+
+```js
+// cloudfunctions/login/index.js
+const cloud = require('wx-server-sdk');
+cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
+exports.main = async () => {
+  const { OPENID } = cloud.getWXContext();
+  return { openid: OPENID };
+};
+```
 
 ## 注意事项
 

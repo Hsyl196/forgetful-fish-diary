@@ -1,9 +1,23 @@
 <view class="page-wrap theme-{{theme}}">
 
+  <!-- 登录卡 / 个人资料 -->
   <view class="card hero">
-    <image class="avatar" src="{{avatar}}" />
-    <view class="name">鱼的记忆 🐟</view>
-    <view class="slogan">鱼的记忆只有7秒，但日记替你记得 🫧</view>
+    <block wx:if="{{user}}">
+      <image class="avatar" src="{{user.avatar || '/assets/moods/m1.png'}}" mode="aspectFill" />
+      <view class="name">{{user.nick}}</view>
+      <view class="slogan">鱼的记忆只有7秒，但日记替你记得 🫧</view>
+      <view class="hero-btns">
+        <view class="hb" bindtap="openLogin">编辑资料</view>
+        <view class="hb ghost" bindtap="logout">退出登录</view>
+      </view>
+    </block>
+    <block wx:else>
+      <image class="avatar" src="/assets/moods/m1.png" />
+      <view class="name">还没有登录</view>
+      <view class="slogan">登录后显示你的微信头像和昵称 🐟</view>
+      <view class="login-btn" bindtap="openLogin">微信一键登录</view>
+      <view class="guest-tip">不登录也能写日记，数据存在本机</view>
+    </block>
   </view>
 
   <view class="card">
@@ -37,4 +51,33 @@
   </view>
 
   <view class="foot">鱼的记忆 · 数据保存在本设备 🫧</view>
+
+  <!-- 登录浮层 -->
+  <view class="login-mask {{loginOpen ? 'show' : ''}}" bindtap="closeLogin">
+    <view class="login-box" catchtap="noop">
+      <view class="lb-title">{{user ? '编辑个人资料' : '微信登录'}}</view>
+      <view class="lb-sub">头像昵称只保存在本机，不会上传服务器</view>
+
+      <button class="avatar-pick" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image wx:if="{{form.avatar}}" class="avatar-preview" src="{{form.avatar}}" mode="aspectFill" />
+        <view wx:else class="avatar-empty">
+          <text class="ap-plus">＋</text>
+          <text class="ap-tip">选择微信头像</text>
+        </view>
+      </button>
+
+      <view class="nick-row">
+        <input class="nick-input" type="nickname" placeholder="点击使用微信昵称"
+               value="{{form.nick}}" bindinput="onNickInput" bindblur="onNickInput" maxlength="20" />
+        <view class="nick-clear" wx:if="{{form.nick}}" bindtap="clearNick">✕</view>
+      </view>
+      <view class="nick-tip">点输入框，键盘上方可一键填入微信昵称</view>
+
+      <view class="lb-actions">
+        <view class="lb-cancel" bindtap="closeLogin">取消</view>
+        <view class="lb-ok {{logging ? 'loading' : ''}}" bindtap="doLogin">{{user ? '保存' : '登录'}}</view>
+      </view>
+      <view class="lb-note">登录后可区分账号数据，公开日记会显示你的昵称</view>
+    </view>
+  </view>
 </view>

@@ -1,6 +1,7 @@
 const app = getApp();
 const util = require('../../utils/util');
 const storeUtil = require('../../utils/store');
+const userUtil = require('../../utils/user');
 const { MOODS, COMMON_COUNT, faceImg } = require('../../utils/moods');
 const { fmtKey } = util;
 
@@ -220,6 +221,7 @@ Page({
     }
     const store = storeUtil.loadStore();
     const editing = this.data.editing ? store.find(x => x.id === this.data.editId) : null;
+    const me = userUtil.getUser();
     const fields = {
       dateKey: this.data.dateKey,
       title: this.data.title.trim() || '无题',
@@ -228,7 +230,10 @@ Page({
       photos: this.data.photos,
       location: this.data.locName === '未定位' ? '' : this.data.locName,
       weather: this.data.weatherText || '',
-      weatherIcon: this.data.weatherIcon || ''
+      weatherIcon: this.data.weatherIcon || '',
+      /* 作者信息：新日记记当前登录用户，编辑时保留原作者 */
+      author: editing ? (editing.author || null)
+        : (me ? { name: me.nick, avatar: me.avatar, uid: me.uid } : null)
     };
     let entry;
     if (editing) {

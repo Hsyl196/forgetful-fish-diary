@@ -37,3 +37,12 @@
   margin: 26rpx 28rpx 6rpx; font-size: 27rpx; font-weight: 600; color: var(--text);
 }
 .day-title .sub { font-size: 21rpx; font-weight: 400; color: var(--text-sub); }
+
+/* 公开日记作者 */
+.diary-item .author {
+  display: flex; align-items: center; gap: 8rpx;
+  font-size: 20rpx; color: var(--primary);
+  background: var(--primary-light); border-radius: 999rpx;
+  padding: 3rpx 14rpx 3rpx 4rpx;
+}
+.diary-item .author-av { width: 32rpx; height: 32rpx; border-radius: 50%; }
